@@ -1,8 +1,8 @@
 # Create dashboard header
 header <- dashboardHeader(
   dropdownMenu(type = "notifications"
-               , notificationItem(text = "Data is as at 30.06.2016"
-               , icon("exclamation-circle"))), 
+               , notificationItem(text = "Data is as at 31.07.2016"
+                                  , icon("exclamation-circle"))), 
   title = "Workforce Demographics",
   titleWidth = 300
 )
@@ -82,14 +82,14 @@ body <- dashboardBody(
     tags$style(
       HTML(".shiny-output-error-validation {color: red;}"))),
   
-#   tabBox( 
-#     "ageTab"
-#     , title = "Age"
-#     , side = "right"
-#     , tabPanel("Age by ATO Tenure", plotlyOutput("ageTnrPlot", height = 200))
-#     , tabPanel("Age",               plotlyOutput("agePlot", height = 200))
-#     , selected = "Age"
-#   ),
+  #   tabBox( 
+  #     "ageTab"
+  #     , title = "Age"
+  #     , side = "right"
+  #     , tabPanel("Age by ATO Tenure", plotlyOutput("ageTnrPlot", height = 200))
+  #     , tabPanel("Age",               plotlyOutput("agePlot", height = 200))
+  #     , selected = "Age"
+  #   ),
   
   box(
     title = "Age"

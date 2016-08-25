@@ -1,7 +1,7 @@
 function(input, output, session) {
   
 # Dynamic UI ####
-  
+
 # dynamic ui for Location/Group plot
 output$locnGrpTitle <- renderUI({
   
@@ -10,8 +10,8 @@ output$locnGrpTitle <- renderUI({
   } else { 
     ttl <- "Group by BSL"
   }
-    # print object
-    ttl
+  # print object
+  ttl
   
 })
 
@@ -23,8 +23,8 @@ output$jfGrpTitle <- renderUI({
   } else { 
     ttl <- "Group by BSL"
   }
-    # print object
-    ttl
+  # print object
+  ttl
   
 })
 
@@ -40,8 +40,8 @@ wddDataset <- reactive({
   } else {
     wddDmgsSbst <- subset(wddDmgs, wddDmgs$Perm_Temp == input$wddSelEmpTyp)
   }
-    # print dataframe
-    wddDmgsSbst
+  # print dataframe
+  wddDmgsSbst
   
 })
 
@@ -67,8 +67,8 @@ wddDataset2 <- reactive({
   } else if (input$wddSelOrg == "Site"){
     df <- subset(wddDataset(), wddDataset()$Position_Location == input$wddSelSite)
   }
-    # print dataframe
-    df
+  # print dataframe
+  df
   
 })
 
@@ -85,7 +85,7 @@ wddOrgPrfl <- reactive({
     summarise(HC = n()) %>% 
     ungroup() %>% 
     mutate(Percent = round(HC/sum(HC)*100,2)) ->
-  orgPrfl
+    orgPrfl
   
 })
 
@@ -102,7 +102,7 @@ wddAgeTnrPrfl <- reactive({
     summarise(HC = n()) %>% 
     ungroup() %>% 
     mutate(Percent = round(HC/sum(HC)*100,2)) ->
-  ageTnrPrfl  
+    ageTnrPrfl  
   
 })
 
@@ -117,22 +117,22 @@ wddAgePrfl <- reactive({
     summarise(HC = n()) %>% 
     ungroup() %>% 
     mutate(Percent = round(HC/sum(HC)*100,2)) ->
-  agePrfl
-    
+    agePrfl
+  
 })
 
 #___________________________________________________________________________________________________
 
 # Classification data
 wddClassnPrfl <- reactive({
-
+  
   wddDataset2() %>% 
     select(Actual_Classification) %>% 
     group_by(Actual_Classification) %>%
     summarise(HC = n()) %>% 
     ungroup() %>% 
     mutate(Percent = round(HC/sum(HC)*100,2)) ->
-  classnPrfl    
+    classnPrfl    
   
 })
 
@@ -140,29 +140,29 @@ wddClassnPrfl <- reactive({
 
 # ATO Tenure data
 wddTnrPrfl <- reactive({
-
+  
   wddDataset2() %>% 
     select(ATO_Tenure_Range) %>% 
     group_by(ATO_Tenure_Range) %>%
     summarise(HC = n()) %>% 
     ungroup() %>% 
     mutate(Percent = round(HC/sum(HC)*100,2)) ->
-  tnrPrfl    
+    tnrPrfl    
   
 })
 
 #___________________________________________________________________________________________________
-   
+
 # Job Family data
 wddJobPrfl <- reactive({
-
+  
   wddDataset2() %>% 
     select(Job_Family) %>% 
     group_by(Job_Family) %>%
     summarise(HC = n()) %>% 
     ungroup() %>% 
     mutate(Percent = round(HC/sum(HC)*100,2)) ->
- jfPrfl
+    jfPrfl
   
 })
 
@@ -177,7 +177,7 @@ wddLocnPrfl <- reactive({
     summarise(HC = n()) %>% 
     ungroup() %>% 
     mutate(Percent = round(HC/sum(HC)*100,2)) ->
-  locnPrfl
+    locnPrfl
   
 })
 
@@ -197,7 +197,7 @@ data.msg <- reactive({
 
 # error message to user where less than 100 records 
 prvcy.msg <- reactive({
-
+  
   msg <- validate(need(nrow(wddDataset2()) >= 100
                        , "For privacy purposes, this metric only displays for populations of 100 or more"))
   # print message
@@ -221,41 +221,41 @@ output$agePlot <- renderPlotly({
   m <- list(t = 10, r = 30)
   
   if (input$wddSelView == "Headcount"){
-
+    
     # plotly build
     p <- plot_ly(data = wddAgePrfl()
                  , x = Age_Range_5yr
                  , y = HC
                  , type = "bar") %>% 
-         layout(xaxis = x
-                , yaxis = y
-                , margin = m) %>% 
-         config(displayModeBar = F)
-  
+      layout(xaxis = x
+             , yaxis = y
+             , margin = m) %>% 
+      config(displayModeBar = F)
+    
     # print plotly build
     p
-
+    
   } else if (input$wddSelView == "Percentage"){
-
+    
     # plotly layout
     p <- plot_ly(data = wddAgePrfl()
                  , x = Age_Range_5yr
                  , y = Percent
                  , type = "bar") %>% 
-         layout(xaxis = x
-                , yaxis = y
-                , margin = m) %>% 
-         config(displayModeBar = F)
+      layout(xaxis = x
+             , yaxis = y
+             , margin = m) %>% 
+      config(displayModeBar = F)
     
     # print plotly build
     p
-
+    
   }
-
-})
   
+})
+
 #___________________________________________________________________________________________________  
-   
+
 # Age by Tenure plot ####
 output$ageTnrPlot <- renderPlotly({
   
@@ -268,92 +268,92 @@ output$ageTnrPlot <- renderPlotly({
   m <- list(t = 10, r = 30)
   
   if (input$wddSelView == "Headcount"){
-
+    
     # plotly layout
     p <- plot_ly(data = wddAgeTnrPrfl()
                  , x = Age_Range_5yr
                  , y = HC
                  , group = ATO_Tenure_Range
                  , type = "bar") %>% 
-         layout(barmode = "stack"
-                , xaxis = x
-                , yaxis = y
-                , margin = m
-                , showlegend = F) %>% 
-         config(displayModeBar = F)
+      layout(barmode = "stack"
+             , xaxis = x
+             , yaxis = y
+             , margin = m
+             , showlegend = F) %>% 
+      config(displayModeBar = F)
     
     # print plotly build
     p
-
+    
   } else if (input$wddSelView == "Percentage"){
-
+    
     # plotly layout
     p <- plot_ly(data = wddAgeTnrPrfl()
                  , x = Age_Range_5yr
                  , y = Percent
                  , group = ATO_Tenure_Range
                  , type = "bar") %>% 
-         layout(barmode = "stack"
-                , xaxis = x
-                , yaxis = y
-                , margin = m
-                , showlegend = F) %>% 
-         config(displayModeBar = F)
+      layout(barmode = "stack"
+             , xaxis = x
+             , yaxis = y
+             , margin = m
+             , showlegend = F) %>% 
+      config(displayModeBar = F)
     
     # print plotly build
     p
-
+    
   }
-
+  
 }) 
-  
+
 #___________________________________________________________________________________________________
-  
+
 # Classification profile plot ####
 output$classnPlot <- renderPlotly({
   
   # error message to user where no data exists in selection
   data.msg()
-
+  
   # plot variables
   x <- list(title = "")
   y <- list(title = input$wddSelView)
   m <- list(t = 10, r = 30)
-
+  
   if (input$wddSelView == "Headcount"){
-
+    
     # plotly layout
     p <- plot_ly(data = wddClassnPrfl()
                  , x = Actual_Classification
                  , y = HC
                  , type = "bar") %>% 
-         layout(xaxis = x
-                , yaxis = y
-                , margin = m) %>% 
-         config(displayModeBar = F)
+      layout(xaxis = x
+             , yaxis = y
+             , margin = m) %>% 
+      config(displayModeBar = F)
     
     # print plotly build
     p
-
+    
   } else if (input$wddSelView == "Percentage"){
-
+    
     # plotly layout
     p <- plot_ly(data = wddClassnPrfl()
                  , x = Actual_Classification
                  , y = Percent
                  , type = "bar") %>% 
-         layout(xaxis = x
-                , yaxis = y
-                , margin = m) %>% 
-         config(displayModeBar = F)
+      layout(xaxis = x
+             , yaxis = y
+             , margin = m) %>% 
+      config(displayModeBar = F)
     
     # print plotly build
     p
-
+    
   }
-
-})
   
+})
+
 #___________________________________________________________________________________________________
 
 # ATO Tenure profile plot ####
@@ -361,46 +361,46 @@ output$atoPlot <- renderPlotly({
   
   # error message to user where no data exists in selection
   data.msg()
-
+  
   # plot variables
   x <- list(title = "")
   y <- list(title = input$wddSelView)
   m <- list(t = 10, r = 30)
   
   if (input$wddSelView == "Headcount"){
-  
+    
     # plotly layout
     p <- plot_ly(data = wddTnrPrfl()
                  , x = ATO_Tenure_Range
                  , y = HC
                  , type = "bar") %>% 
-         layout(xaxis = x
-                , yaxis = y
-                , margin = m) %>% 
-         config(displayModeBar = F)
+      layout(xaxis = x
+             , yaxis = y
+             , margin = m) %>% 
+      config(displayModeBar = F)
     
     # print plotly build
     p
-
+    
   } else if (input$wddSelView == "Percentage"){
-  
+    
     # plotly layout
     p <- plot_ly(data = wddTnrPrfl()
                  , x = ATO_Tenure_Range
                  , y = Percent
                  , type = "bar") %>% 
-         layout(xaxis = x
-                , yaxis = y
-                , margin = m) %>% 
-         config(displayModeBar = F)
+      layout(xaxis = x
+             , yaxis = y
+             , margin = m) %>% 
+      config(displayModeBar = F)
     
     # print plotly build
     p
-
+    
   }
-
-})
   
+})
+
 #___________________________________________________________________________________________________
 
 # Job Family profile plot ####
@@ -408,80 +408,80 @@ output$jfPlot <- renderPlotly({
   
   # error message to user where no data exists in selection
   data.msg()
-
+  
   # plot variables
   x <- list(title = "")
   y <- list(title = input$wddSelView)
   m <- list(t = 10, r = 30)
   
   if (input$wddSelView == "Headcount" & input$wddSelOrg != "Job Family"){
-
+    
     # plotly layout
     p <- plot_ly(data = wddJobPrfl()
                  , x = Job_Family
                  , y = HC
                  , type = "bar") %>% 
-         layout(xaxis = x
-                , yaxis = y
-                , margin = m) %>% 
-         config(displayModeBar = F)
+      layout(xaxis = x
+             , yaxis = y
+             , margin = m) %>% 
+      config(displayModeBar = F)
     
     # print plotly build
     p
-
+    
   } else if (input$wddSelView == "Percentage" & input$wddSelOrg != "Job Family"){
-
+    
     # plotly layout
     p <- plot_ly(data = wddJobPrfl()
                  , x = Job_Family
                  , y = Percent
                  , type = "bar") %>% 
-         layout(xaxis = x
-                , yaxis = y
-                , margin = m) %>% 
-         config(displayModeBar = F)
+      layout(xaxis = x
+             , yaxis = y
+             , margin = m) %>% 
+      config(displayModeBar = F)
     
     # print plotly build
     p
     
   } else if (input$wddSelView == "Headcount" & input$wddSelOrg == "Job Family"){
- 
+    
     # plotly layout
     p <- plot_ly(wddOrgPrfl()
                  , x = Subplan
                  , y = HC
                  , group = BSL
                  , type = "bar") %>% 
-         layout(barmode = "stack"
-                , xaxis = x
-                , yaxis = y
-                , margin = m
-                , showlegend = F) %>% 
-         config(displayModeBar = F)
+      layout(barmode = "stack"
+             , xaxis = x
+             , yaxis = y
+             , margin = m
+             , showlegend = F) %>% 
+      config(displayModeBar = F)
     
     # print plotly build
     p
-
+    
   } else if (input$wddSelView == "Percentage" & input$wddSelOrg == "Job Family"){
-
+    
     # plotly layout
     p <- plot_ly(wddOrgPrfl()
                  , x = Subplan
                  , y = Percent
                  , group = BSL
                  , type = "bar") %>% 
-         layout(barmode ="stack"
-                , xaxis = x
-                , yaxis = y
-                , margin = m
-                , showlegend = F) %>% 
-         config(displayModeBar = F)
+      layout(barmode ="stack"
+             , xaxis = x
+             , yaxis = y
+             , margin = m
+             , showlegend = F) %>% 
+      config(displayModeBar = F)
     
     # print plotly build
     p
-
+    
   }
-
+  
 })
 
 #___________________________________________________________________________________________________
@@ -491,27 +491,27 @@ output$locnPlot <- renderPlotly({
   
   # error message to user where no data exists in selection
   data.msg()
-
+  
   # plot variables
   x <- list(title = "")
   y <- list(title = input$wddSelView)
   m <- list(t = 10, r = 30)
   
   if (input$wddSelView == "Headcount" & input$wddSelOrg != "Site"){
-
+    
     # plotly layout
     p <- plot_ly(data = wddLocnPrfl()
                  , x = Position_Location
                  , y = HC
                  , type = "bar") %>% 
-         layout(xaxis = x
-                , yaxis = y
-                , margin = m) %>% 
-         config(displayModeBar = F)
+      layout(xaxis = x
+             , yaxis = y
+             , margin = m) %>% 
+      config(displayModeBar = F)
     
     # print plotly build
     p
-
+    
   } else if (input$wddSelView == "Percentage" & input$wddSelOrg != "Site"){
     
     # plotly layout
@@ -519,58 +519,58 @@ output$locnPlot <- renderPlotly({
                  , x = Position_Location
                  , y = Percent
                  , type = "bar") %>% 
-         layout(xaxis = x
-                 , yaxis = y
-                 , margin = m) %>% 
-         config(displayModeBar = F)
+      layout(xaxis = x
+             , yaxis = y
+             , margin = m) %>% 
+      config(displayModeBar = F)
     
     # print plotly build
     p
     
   } else if (input$wddSelView == "Headcount" & input$wddSelOrg == "Site"){
-
+    
     # local margin 
     m <- list(t = 10, b = 30, l = 60, r = 30)
-
+    
     # plotly layout 
     p <- plot_ly(wddOrgPrfl()
                  , x = Subplan
                  , y = HC
                  , group = BSL
                  , type = "bar") %>% 
-         layout(barmode ="stack"
-                , xaxis = x
-                , yaxis = y
-                , margin = m
-                , showlegend = F) %>% 
-         config(displayModeBar = F)
+      layout(barmode ="stack"
+             , xaxis = x
+             , yaxis = y
+             , margin = m
+             , showlegend = F) %>% 
+      config(displayModeBar = F)
     
     # print plotly build
     p
-
+    
   } else if (input$wddSelView == "Percentage" & input$wddSelOrg == "Site"){
-
+    
     # local margin 
     m <- list(t = 10, b = 30, l = 60, r = 30)
-
+    
     # plotly layout
     p <- plot_ly(wddOrgPrfl()
                  , x = Subplan
                  , y = Percent
                  , group = BSL
                  , type = "bar") %>% 
-         layout(barmode ="stack"
-                , xaxis = x
-                , yaxis = y
-                , margin = m
-                , showlegend = F) %>% 
-         config(displayModeBar = F)
+      layout(barmode ="stack"
+             , xaxis = x
+             , yaxis = y
+             , margin = m
+             , showlegend = F) %>% 
+      config(displayModeBar = F)
     
     # print plotly build
     p
-
+    
   }
-
+  
 })
 
 #___________________________________________________________________________________________________
@@ -580,24 +580,24 @@ output$gndrPlot <- renderPlotly({
   
   # error message to user where no data exists in selection
   data.msg()
-
+  
   # plot variables
   m <- list(t = 25, b = 15)
   
   # gender plot data
   gndrPrfl <- as.data.frame(table(wddDataset2()$Gender))
-
+  
   # plotly layout
   p <- plot_ly(data = gndrPrfl
                , labels = Var1
                , values = Freq
                , type = "pie") %>% 
-       layout(margin = m) %>% 
-       config(displayModeBar = F)
+    layout(margin = m) %>% 
+    config(displayModeBar = F)
   
   # print plotly build
   p
-
+  
 })
 
 output$nesbPlot <- renderPlotly({
@@ -610,21 +610,21 @@ output$nesbPlot <- renderPlotly({
   
   # plot variables
   m <- list(t = 25, b = 15)
- 
+  
   # nesb data 
   nesbPrfl <- as.data.frame(table(wddDataset2()$NESB_Sum))
-
+  
   # plotly layout
   p <- plot_ly(data = nesbPrfl
                , labels = Var1
                , values = Freq
                , type = "pie") %>% 
-       layout(margin = m) %>% 
+    layout(margin = m) %>% 
     config(displayModeBar = F)
   
   # print plotly build
   p
-
+  
 })
 
 output$dsblPlot <- renderPlotly({
@@ -634,24 +634,24 @@ output$dsblPlot <- renderPlotly({
   
   # error message to user where less than 100 records 
   prvcy.msg()
-
+  
   # plot variables
   m <- list(t = 25, b = 15)
   
   # disability data
   dsblPrfl <- as.data.frame(table(wddDataset2()$Disability_HC))
-
+  
   # plotly layout
   p <- plot_ly(data = dsblPrfl
                , labels = Var1
                , values = Freq
                , type = "pie") %>% 
-       layout(margin = m) %>% 
+    layout(margin = m) %>% 
     config(displayModeBar = F)
   
   # print plotly build
   p
-
+  
 })
 
 output$indgPlot <- renderPlotly({
@@ -661,24 +661,24 @@ output$indgPlot <- renderPlotly({
   
   # error message to user where less than 100 records 
   prvcy.msg()
-
+  
   # plot variables
   m <- list(t = 25, b = 15)
   
   # indigenous data
   indgPrfl <- as.data.frame(table(wddDataset2()$Indigenous_HC))
-
+  
   # plotly layout
   p <- plot_ly(data = indgPrfl
                , labels = Var1
                , values = Freq
                , type = "pie") %>% 
-       layout(margin = m) %>% 
+    layout(margin = m) %>% 
     config(displayModeBar = F)
   
   # print plotly build
   p
-
+  
 })
   
 }

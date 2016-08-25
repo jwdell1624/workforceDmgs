@@ -1,8 +1,8 @@
-library(shinydashboard)
-library(readr)
-library(plotly)
-library(ggplot2)
-library(dplyr)
+suppressMessages(library(shinydashboard))
+suppressMessages(library(readr))
+suppressMessages(library(plotly))
+suppressMessages(library(ggplot2))
+suppressMessages(library(dplyr))
 
 # Set working directory and read data ####
 
@@ -13,7 +13,7 @@ setwd(wd)
 # read data
 wddDmgs <- read_csv("data/wddDmgs.csv")
 
-#___________________________________________________________________________________________________
+#__________________________________________________________________________________________________#
 
 # Data cleanse ####
 
@@ -44,4 +44,5 @@ wddDmgs$Age_Range_5yr <- factor(wddDmgs$Age_Range_5yr
                                 , levels = c("< 20","20 - 24","25 - 29","30 - 34","35 - 39"
                                              , "40 - 44", "45 - 49", "50 - 54", "55 - 59", "60 - 64"
                                              , "65 - 69", ">= 70"))
-#___________________________________________________________________________________________________
+
+#__________________________________________________________________________________________________#
