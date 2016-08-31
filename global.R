@@ -11,6 +11,9 @@ wddDmgs <- read_csv("data/wddDmgs.csv")
 
 # Data cleanse ####
 
+# remove CSA Externals
+wddDmgs <- subset(wddDmgs, wddDmgs$Cost_Centre_Text != "CSA External Staff")
+
 # remove na's 
 wddDmgs$NESB1_HC      <- ifelse(is.na(wddDmgs$NESB1_HC), 0, 1)
 wddDmgs$NESB2_HC      <- ifelse(is.na(wddDmgs$NESB2_HC), 0, 1)
