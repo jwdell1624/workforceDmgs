@@ -82,14 +82,14 @@ body <- dashboardBody(
     tags$style(
       HTML(".shiny-output-error-validation {color: red;}"))),
   
-#   tabBox( 
-#     "ageTab"
-#     , title = "Age"
-#     , side = "right"
-#     , tabPanel("Age by ATO Tenure", plotlyOutput("ageTnrPlot", height = 200))
-#     , tabPanel("Age",               plotlyOutput("agePlot", height = 200))
-#     , selected = "Age"
-#   ),
+  #   tabBox( 
+  #     "ageTab"
+  #     , title = "Age"
+  #     , side = "right"
+  #     , tabPanel("Age by ATO Tenure", plotlyOutput("ageTnrPlot", height = 200))
+  #     , tabPanel("Age",               plotlyOutput("agePlot", height = 200))
+  #     , selected = "Age"
+  #   ),
   
   box(
     title = "Age"
