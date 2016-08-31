@@ -1,7 +1,7 @@
 # Create dashboard header
 header <- dashboardHeader(
   dropdownMenu(type = "notifications"
-               , notificationItem(text = "Data is as at 30.06.2016"
+               , notificationItem(text = "Data is as at 31.07.2016"
                , icon("exclamation-circle"))), 
   title = "Workforce Demographics",
   titleWidth = 300
