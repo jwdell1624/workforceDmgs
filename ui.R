@@ -1,11 +1,15 @@
+# define plot height variable
+plot.height <- 245
+
 # Create dashboard header
 header <- dashboardHeader(
   dropdownMenu(type = "notifications"
-               , notificationItem(text = "Data is as at 31.07.2016"
+               , notificationItem(text = "Data is at 31.08.2016" #read.table("data/dateComment.txt")
                , icon("exclamation-circle"))), 
   title = "Workforce Demographics",
   titleWidth = 300
 )
+
 
 # Widgets for dahsboard sidebar
 sidebar <- dashboardSidebar(
@@ -82,44 +86,44 @@ body <- dashboardBody(
     tags$style(
       HTML(".shiny-output-error-validation {color: red;}"))),
   
-  #   tabBox( 
-  #     "ageTab"
-  #     , title = "Age"
-  #     , side = "right"
-  #     , tabPanel("Age by ATO Tenure", plotlyOutput("ageTnrPlot", height = 200))
-  #     , tabPanel("Age",               plotlyOutput("agePlot", height = 200))
-  #     , selected = "Age"
-  #   ),
-  
+#   tabBox( 
+#     "ageTab"
+#     , title = "Age"
+#     , side = "right"
+#     , tabPanel("By ATO Tnr", plotlyOutput("ageTnrPlot", height = plot.height-2))
+#     , tabPanel("All",        plotlyOutput("agePlot2", height = plot.height-2))
+#     , tabPanel("5yrs",       plotlyOutput("agePlot", height = plot.height-2))
+#     , selected = "5yrs"),
+
   box(
     title = "Age"
     , solidHeader = TRUE
     , collapsible = TRUE
-    , status = "success"
-    , plotlyOutput("agePlot", height = 245)),
+    , status = "primary"
+    , plotlyOutput("agePlot", height = plot.height)),
   
   box(
     title = "Classification"
     , solidHeader = TRUE
     , collapsible = TRUE
     , status = "info"
-    , plotlyOutput("classnPlot", height = 245)),
+    , plotlyOutput("classnPlot", height = plot.height)),
   
   box(
     title = "ATO Tenure"
     , solidHeader = TRUE
     , collapsible = TRUE
     , status = "warning"
-    , plotlyOutput("atoPlot", height = 245)),
+    , plotlyOutput("atoPlot", height = plot.height)),
   
   tabBox( 
     "diversityTab"
     , title = "Diversity"
     , side = "right"
-    , tabPanel("Indigenous", plotlyOutput("indgPlot", height = 245))
-    , tabPanel("Disability", plotlyOutput("dsblPlot", height = 245))
-    , tabPanel("NESB",       plotlyOutput("nesbPlot", height = 245))
-    , tabPanel("Gender",     plotlyOutput("gndrPlot", height = 245))
+    , tabPanel("Indigenous", plotlyOutput("indgPlot", height = plot.height))
+    , tabPanel("Disability", plotlyOutput("dsblPlot", height = plot.height))
+    , tabPanel("NESB",       plotlyOutput("nesbPlot", height = plot.height))
+    , tabPanel("Gender",     plotlyOutput("gndrPlot", height = plot.height))
     , selected = "Gender"),
   
   box(
@@ -127,14 +131,14 @@ body <- dashboardBody(
     , solidHeader = TRUE
     , collapsible = TRUE
     , status = "success"
-    , plotlyOutput("jfPlot", height = 245)),
+    , plotlyOutput("jfPlot", height = plot.height)),
   
   box(
     title = uiOutput("locnGrpTitle")
     , solidHeader = TRUE
     , collapsible = TRUE
     , status = "info"
-    , plotlyOutput("locnPlot", height = 245))
+    , plotlyOutput("locnPlot", height = plot.height))
 )
 
 # Render dashboard

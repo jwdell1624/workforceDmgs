@@ -28,7 +28,7 @@ output$jfGrpTitle <- renderUI({
   
 })
 
-#___________________________________________________________________________________________________
+####################################################################################################
 
 # Data ####
 
@@ -44,6 +44,8 @@ wddDataset <- reactive({
   wddDmgsSbst
   
 })
+
+#__________________________________________________________________________________________________#
 
 # then subset by lens option
 wddDataset2 <- reactive({
@@ -72,7 +74,7 @@ wddDataset2 <- reactive({
   
 })
 
-#___________________________________________________________________________________________________
+#__________________________________________________________________________________________________#
 
 # Group/bsl data
 wddOrgPrfl <- reactive({
@@ -85,11 +87,25 @@ wddOrgPrfl <- reactive({
     summarise(HC = n()) %>% 
     ungroup() %>% 
     mutate(Percent = round(HC/sum(HC)*100,2)) ->
-    orgPrfl
+  orgPrfl
   
 })
 
-#___________________________________________________________________________________________________
+#__________________________________________________________________________________________________#
+
+# Average Age
+mean.age <- reactive({
+  
+  mean(wddDataset2()$Age_Integer)
+  
+})
+
+# Median Age
+med.age <- reactive({
+  
+  median(wddDataset2()$Age_Integer)
+  
+})
 
 # Age/tenure data 
 wddAgeTnrPrfl <- reactive({
@@ -102,13 +118,11 @@ wddAgeTnrPrfl <- reactive({
     summarise(HC = n()) %>% 
     ungroup() %>% 
     mutate(Percent = round(HC/sum(HC)*100,2)) ->
-    ageTnrPrfl  
+  ageTnrPrfl  
   
 })
 
-#___________________________________________________________________________________________________
-
-# Age data
+# Age data - 5yrs
 wddAgePrfl <- reactive({
   
   wddDataset2() %>% 
@@ -117,11 +131,27 @@ wddAgePrfl <- reactive({
     summarise(HC = n()) %>% 
     ungroup() %>% 
     mutate(Percent = round(HC/sum(HC)*100,2)) ->
-    agePrfl
+  agePrfl
   
 })
 
-#___________________________________________________________________________________________________
+# Age data - Single Yrs
+wddAgePrfl2 <- reactive({
+  
+  wddDataset2() %>% 
+    select(Age_Integer) %>%
+    group_by(Age_Integer) %>%
+    summarise(HC = n()) %>% 
+    ungroup() %>% 
+    mutate(Percent = round(HC/sum(HC)*100,2)
+           , Mean = mean.age()
+           , Median = med.age()) %>% 
+    filter(Age_Integer > 10 & Age_Integer < 85) ->
+  agePrfl2
+  
+})
+
+#__________________________________________________________________________________________________#
 
 # Classification data
 wddClassnPrfl <- reactive({
@@ -132,11 +162,11 @@ wddClassnPrfl <- reactive({
     summarise(HC = n()) %>% 
     ungroup() %>% 
     mutate(Percent = round(HC/sum(HC)*100,2)) ->
-    classnPrfl    
+  classnPrfl    
   
 })
 
-#___________________________________________________________________________________________________
+#__________________________________________________________________________________________________#
 
 # ATO Tenure data
 wddTnrPrfl <- reactive({
@@ -147,11 +177,11 @@ wddTnrPrfl <- reactive({
     summarise(HC = n()) %>% 
     ungroup() %>% 
     mutate(Percent = round(HC/sum(HC)*100,2)) ->
-    tnrPrfl    
+  tnrPrfl    
   
 })
 
-#___________________________________________________________________________________________________
+#__________________________________________________________________________________________________#
 
 # Job Family data
 wddJobPrfl <- reactive({
@@ -162,11 +192,11 @@ wddJobPrfl <- reactive({
     summarise(HC = n()) %>% 
     ungroup() %>% 
     mutate(Percent = round(HC/sum(HC)*100,2)) ->
-    jfPrfl
+  jfPrfl
   
 })
 
-#___________________________________________________________________________________________________
+#__________________________________________________________________________________________________#
 
 # Position Location data
 wddLocnPrfl <- reactive({
@@ -177,11 +207,11 @@ wddLocnPrfl <- reactive({
     summarise(HC = n()) %>% 
     ungroup() %>% 
     mutate(Percent = round(HC/sum(HC)*100,2)) ->
-    locnPrfl
+  locnPrfl
   
 })
 
-#___________________________________________________________________________________________________
+####################################################################################################
 
 # Error Messages to client ####
 
@@ -205,11 +235,11 @@ prvcy.msg <- reactive({
   
 })
 
-#___________________________________________________________________________________________________
+####################################################################################################
 
 # Plots ####
 
-# Age plot ####
+# Age plot 5yr ####
 output$agePlot <- renderPlotly({
   
   # error message to user where no data exists in selection
@@ -254,10 +284,10 @@ output$agePlot <- renderPlotly({
   
 })
 
-#___________________________________________________________________________________________________  
+#__________________________________________________________________________________________________#
 
-# Age by Tenure plot ####
-output$ageTnrPlot <- renderPlotly({
+# Age plot Single Yr ####
+output$agePlot2 <- renderPlotly({
   
   # error message to user where no data exists in selection
   data.msg()
@@ -269,18 +299,87 @@ output$ageTnrPlot <- renderPlotly({
   
   if (input$wddSelView == "Headcount"){
     
+    # plotly build
+    p <- plot_ly(data = wddAgePrfl2()
+                 , x = Age_Integer
+                 , y = HC
+                 , type = "bar"
+                 , name = "HC") %>%
+         add_trace(x = c(mean.age(), mean.age())
+                   , y = c(min(HC), max(HC))
+                   , mode = "lines"
+                   , name = "Mean") %>% 
+         add_trace(x = c(med.age(), med.age())
+                   , y = c(min(HC), max(HC))
+                  , mode = "lines"
+                  , name = "Median") %>% 
+         layout(xaxis = x
+                 , yaxis = y
+                 , margin = m
+                 , showlegend = F) %>% 
+         config(displayModeBar = F)
+    
+    # print plotly build
+    p
+    
+  } else if (input$wddSelView == "Percentage"){
+    
+    # plotly layout
+    p <- plot_ly(data = wddAgePrfl2()
+                 , x = Age_Integer
+                 , y = Percent
+                 , type = "bar"
+                 , name = "%") %>%
+         add_trace(x = c(mean.age(), mean.age())
+                   , y = c(min(Percent), max(Percent))
+                   , mode = "lines"
+                   , name = "Mean") %>% 
+        add_trace(x = c(med.age(), med.age())
+                  , y = c(min(Percent), max(Percent))
+                  , mode = "lines"
+                  , name = "Median") %>% 
+         layout(xaxis = x
+                , yaxis = y
+                , margin = m
+                , showlegend = F) %>% 
+         config(displayModeBar = F)
+    
+    # print plotly build
+    p
+    
+  }
+  
+})
+
+#__________________________________________________________________________________________________#
+
+# Age by Tenure plot ####
+output$ageTnrPlot <- renderPlotly({
+  
+  # error message to user where no data exists in selection
+  data.msg()
+  
+  # plot variables
+  x.order = list("< 20","20 - 24","25 - 29","30 - 34","35 - 39", "40 - 44"
+              , "45 - 49", "50 - 54", "55 - 59", "60 - 64", "65 - 69", ">= 70")
+  x <- list(title = "", categoryorder = "array", categoryarray = x.order)
+  y <- list(title = input$wddSelView)
+  m <- list(t = 10, r = 30)
+  
+  if (input$wddSelView == "Headcount"){
+    
     # plotly layout
     p <- plot_ly(data = wddAgeTnrPrfl()
                  , x = Age_Range_5yr
                  , y = HC
                  , group = ATO_Tenure_Range
                  , type = "bar") %>% 
-      layout(barmode = "stack"
-             , xaxis = x
-             , yaxis = y
-             , margin = m
-             , showlegend = F) %>% 
-      config(displayModeBar = F)
+         layout(barmode = "stack"
+                , xaxis = x
+                , yaxis = y
+                , margin = m
+                , showlegend = F) %>% 
+         config(displayModeBar = F)
     
     # print plotly build
     p
@@ -307,7 +406,7 @@ output$ageTnrPlot <- renderPlotly({
   
 }) 
 
-#___________________________________________________________________________________________________
+#__________________________________________________________________________________________________#
 
 # Classification profile plot ####
 output$classnPlot <- renderPlotly({
@@ -354,7 +453,7 @@ output$classnPlot <- renderPlotly({
   
 })
 
-#___________________________________________________________________________________________________
+#__________________________________________________________________________________________________#
 
 # ATO Tenure profile plot ####
 output$atoPlot <- renderPlotly({
@@ -401,7 +500,7 @@ output$atoPlot <- renderPlotly({
   
 })
 
-#___________________________________________________________________________________________________
+#__________________________________________________________________________________________________#
 
 # Job Family profile plot ####
 output$jfPlot <- renderPlotly({
@@ -484,7 +583,7 @@ output$jfPlot <- renderPlotly({
   
 })
 
-#___________________________________________________________________________________________________
+#__________________________________________________________________________________________________#
 
 # Position Location profile plot
 output$locnPlot <- renderPlotly({
@@ -573,7 +672,7 @@ output$locnPlot <- renderPlotly({
   
 })
 
-#___________________________________________________________________________________________________
+#__________________________________________________________________________________________________#
 
 # Diversity plots ####
 output$gndrPlot <- renderPlotly({
