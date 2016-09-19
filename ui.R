@@ -3,8 +3,9 @@ plot.height <- 245
 
 # Create dashboard header
 header <- dashboardHeader(
+  
   dropdownMenu(type = "notifications"
-               , notificationItem(text = "Data is at 31.08.2016" #read.table("data/dateComment.txt")
+               , notificationItem(text = read.table("data/dateComment.txt")
                , icon("exclamation-circle"))), 
   title = "Workforce Demographics",
   titleWidth = 300
@@ -86,6 +87,11 @@ body <- dashboardBody(
     tags$style(
       HTML(".shiny-output-error-validation {color: red;}"))),
   
+  tags$head(
+    tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
+  ),
+  
+  
 #   tabBox( 
 #     "ageTab"
 #     , title = "Age"
@@ -137,7 +143,7 @@ body <- dashboardBody(
     title = uiOutput("locnGrpTitle")
     , solidHeader = TRUE
     , collapsible = TRUE
-    , status = "info"
+    , status = "danger"
     , plotlyOutput("locnPlot", height = plot.height))
 )
 
