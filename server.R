@@ -40,8 +40,23 @@ wddDataset <- reactive({
   } else {
     wddDmgsSbst <- subset(wddDmgs, wddDmgs$Perm_Temp == input$wddSelEmpTyp)
   }
-  # print dataframe
-  wddDmgsSbst
+    # print dataframe
+    wddDmgsSbst
+  
+})
+
+#__________________________________________________________________________________________________#
+
+# then subset by manager or non-manager
+wddDataset1 <- reactive({
+  
+  if (input$wddSelMgr == "All"){
+    wddDmgsSbst1 <- wddDataset()
+  } else {
+    wddDmgsSbst1 <- subset(wddDataset(), wddDataset()$Manager_Indicator == input$wddSelMgr)
+  }
+    # print dataframe
+    wddDmgsSbst1
   
 })
 
@@ -51,26 +66,26 @@ wddDataset <- reactive({
 wddDataset2 <- reactive({
   
   if (input$wddSelOrg == "ATO"){
-    df <- wddDataset()
+    df <- wddDataset1()
   } else if (input$wddSelOrg == "Group"){
-    df <- subset(wddDataset(), wddDataset()$Subplan == input$wddSelGrp)
+    df <- subset(wddDataset1(), wddDataset1()$Subplan == input$wddSelGrp)
   } else if (input$wddSelOrg == "BSL"){
-    df <- subset(wddDataset(), wddDataset()$BSL == input$wddSelBSL)
+    df <- subset(wddDataset1(), wddDataset1()$BSL == input$wddSelBSL)
   } else if (input$wddSelOrg == "Branch"){
-    df <- subset(wddDataset(), wddDataset()$Org_Unit_Branch == input$wddSelBranch)
+    df <- subset(wddDataset1(), wddDataset1()$Org_Unit_Branch == input$wddSelBranch)
   } else if (input$wddSelOrg == "Team/Org.Unit"){
-    df <- subset(wddDataset(), wddDataset()$Org_Unit_Team == input$wddSelTeam)
+    df <- subset(wddDataset1(), wddDataset1()$Org_Unit_Team == input$wddSelTeam)
   } else if (input$wddSelOrg == "Cost Centre"){
-    df <- subset(wddDataset(), wddDataset()$Cost_Centre_Code == input$wddSelCstCntr)
+    df <- subset(wddDataset1(), wddDataset1()$Cost_Centre_Code == input$wddSelCstCntr)
   } else if (input$wddSelOrg == "Classification"){
-    df <- subset(wddDataset(), wddDataset()$Actual_Classification == input$wddSelClassn)
+    df <- subset(wddDataset1(), wddDataset1()$Actual_Classification == input$wddSelClassn)
   } else if (input$wddSelOrg == "Job Family"){
-    df <- subset(wddDataset(), wddDataset()$Job_Family == input$wddSelJob)
+    df <- subset(wddDataset1(), wddDataset1()$Job_Family == input$wddSelJob)
   } else if (input$wddSelOrg == "Site"){
-    df <- subset(wddDataset(), wddDataset()$Position_Location == input$wddSelSite)
+    df <- subset(wddDataset1(), wddDataset1()$Position_Location == input$wddSelSite)
   }
-  # print dataframe
-  df
+    # print dataframe
+    df
   
 })
 
@@ -208,6 +223,111 @@ wddLocnPrfl <- reactive({
     ungroup() %>% 
     mutate(Percent = round(HC/sum(HC)*100,2)) ->
   locnPrfl
+  
+})
+
+#__________________________________________________________________________________________________#
+
+# Diversity data ####
+
+# gender plot data
+gndrPrfl <- reactive({
+  
+  as.data.frame(table(wddDataset2()$Gender))
+
+})
+
+# nesb data 
+nesbPrfl <- reactive({
+  
+  as.data.frame(table(wddDataset2()$NESB_Sum))
+
+})
+
+# disability data
+dsblPrfl <- reactive({
+  
+  as.data.frame(table(wddDataset2()$Disability_HC))
+
+})
+
+# indigenous data
+indgPrfl <- reactive({
+  
+  as.data.frame(table(wddDataset2()$Indigenous_HC))
+
+})
+
+#__________________________________________________________________________________________________#
+
+# Learning and development data ####
+
+# MDP plot data
+mdpPrfl <- reactive({
+  
+  as.data.frame(table(wddDataset2()$MDP_Status))
+  
+})
+
+# F2F, eLRN and External training data
+ldPrfl <- reactive({
+
+   wddDataset2() %>% 
+    select(F2F_Count
+           , eLRN_Count
+           , External_Count) %>% 
+    summarise(HC = n()
+              , F2F = round(sum(F2F_Count)/HC,2)
+              , eLEARN = round(sum(eLRN_Count)/HC,2)
+              , EXTERNAL = round(sum(External_Count)/HC,2)) %>% 
+    gather() %>% 
+    slice(2:4) ->
+  ldPrfl
+ 
+})
+
+# external training cost data
+costPrfl <- reactive({
+  
+  wddDataset2() %>% 
+    select(External_Cost) %>% 
+    summarise(sumCost = sum(External_Cost)
+              , HC = n()
+              , avgCost = round(sumCost/HC,2)
+              , maxCost = max(External_Cost)) %>% 
+    select(`Total Cost` = sumCost
+          , Headcount   = HC
+          , `Average Cost` = avgCost
+          , `Maximum Cost` = maxCost) %>% 
+    gather() ->
+  costPrfl
+  
+  # rename cols for table output
+  colnames(costPrfl) <- c("Measure", "Dollars ($)")
+  
+  # format costs for
+  costPrfl$`Dollars ($)` <- formatC(costPrfl$`Dollars ($)`, format = "d", big.mark = ",")
+  
+  # print dataframe
+  costPrfl
+  
+})
+
+#__________________________________________________________________________________________________#
+
+# Mobility Data ####
+
+# Mobility Register data 
+mobPrfl <- reactive({
+  
+  as.data.frame(table(wddDataset2()$Mobility_Indicator))
+  
+})
+
+# OOM data
+oomPrfl <- reactive({
+  
+  as.data.frame(table(wddDataset2()$OOM_Indicator))
   
 })
 
@@ -392,12 +512,12 @@ output$ageTnrPlot <- renderPlotly({
                  , y = Percent
                  , group = ATO_Tenure_Range
                  , type = "bar") %>% 
-      layout(barmode = "stack"
-             , xaxis = x
-             , yaxis = y
-             , margin = m
-             , showlegend = F) %>% 
-      config(displayModeBar = F)
+          layout(barmode = "stack"
+                 , xaxis = x
+                 , yaxis = y
+                 , margin = m
+                 , showlegend = F) %>% 
+          config(displayModeBar = F)
     
     # print plotly build
     p
@@ -426,10 +546,10 @@ output$classnPlot <- renderPlotly({
                  , x = Actual_Classification
                  , y = HC
                  , type = "bar") %>% 
-      layout(xaxis = x
-             , yaxis = y
-             , margin = m) %>% 
-      config(displayModeBar = F)
+          layout(xaxis = x
+                 , yaxis = y
+                 , margin = m) %>% 
+          config(displayModeBar = F)
     
     # print plotly build
     p
@@ -441,10 +561,10 @@ output$classnPlot <- renderPlotly({
                  , x = Actual_Classification
                  , y = Percent
                  , type = "bar") %>% 
-      layout(xaxis = x
-             , yaxis = y
-             , margin = m) %>% 
-      config(displayModeBar = F)
+          layout(xaxis = x
+                 , yaxis = y
+                 , margin = m) %>% 
+          config(displayModeBar = F)
     
     # print plotly build
     p
@@ -473,10 +593,10 @@ output$atoPlot <- renderPlotly({
                  , x = ATO_Tenure_Range
                  , y = HC
                  , type = "bar") %>% 
-      layout(xaxis = x
-             , yaxis = y
-             , margin = m) %>% 
-      config(displayModeBar = F)
+          layout(xaxis = x
+                 , yaxis = y
+                 , margin = m) %>% 
+          config(displayModeBar = F)
     
     # print plotly build
     p
@@ -488,10 +608,10 @@ output$atoPlot <- renderPlotly({
                  , x = ATO_Tenure_Range
                  , y = Percent
                  , type = "bar") %>% 
-      layout(xaxis = x
-             , yaxis = y
-             , margin = m) %>% 
-      config(displayModeBar = F)
+          layout(xaxis = x
+                 , yaxis = y
+                 , margin = m) %>% 
+          config(displayModeBar = F)
     
     # print plotly build
     p
@@ -520,10 +640,10 @@ output$jfPlot <- renderPlotly({
                  , x = Job_Family
                  , y = HC
                  , type = "bar") %>% 
-      layout(xaxis = x
-             , yaxis = y
-             , margin = m) %>% 
-      config(displayModeBar = F)
+          layout(xaxis = x
+                 , yaxis = y
+                 , margin = m) %>% 
+          config(displayModeBar = F)
     
     # print plotly build
     p
@@ -535,10 +655,10 @@ output$jfPlot <- renderPlotly({
                  , x = Job_Family
                  , y = Percent
                  , type = "bar") %>% 
-      layout(xaxis = x
-             , yaxis = y
-             , margin = m) %>% 
-      config(displayModeBar = F)
+          layout(xaxis = x
+                 , yaxis = y
+                 , margin = m) %>% 
+          config(displayModeBar = F)
     
     # print plotly build
     p
@@ -551,12 +671,12 @@ output$jfPlot <- renderPlotly({
                  , y = HC
                  , group = BSL
                  , type = "bar") %>% 
-      layout(barmode = "stack"
-             , xaxis = x
-             , yaxis = y
-             , margin = m
-             , showlegend = F) %>% 
-      config(displayModeBar = F)
+          layout(barmode = "stack"
+                 , xaxis = x
+                 , yaxis = y
+                 , margin = m
+                 , showlegend = F) %>% 
+          config(displayModeBar = F)
     
     # print plotly build
     p
@@ -569,12 +689,12 @@ output$jfPlot <- renderPlotly({
                  , y = Percent
                  , group = BSL
                  , type = "bar") %>% 
-      layout(barmode ="stack"
-             , xaxis = x
-             , yaxis = y
-             , margin = m
-             , showlegend = F) %>% 
-      config(displayModeBar = F)
+          layout(barmode ="stack"
+                 , xaxis = x
+                 , yaxis = y
+                 , margin = m
+                 , showlegend = F) %>% 
+          config(displayModeBar = F)
     
     # print plotly build
     p
@@ -603,10 +723,10 @@ output$locnPlot <- renderPlotly({
                  , x = Position_Location
                  , y = HC
                  , type = "bar") %>% 
-      layout(xaxis = x
-             , yaxis = y
-             , margin = m) %>% 
-      config(displayModeBar = F)
+          layout(xaxis = x
+                 , yaxis = y
+                 , margin = m) %>% 
+          config(displayModeBar = F)
     
     # print plotly build
     p
@@ -618,10 +738,10 @@ output$locnPlot <- renderPlotly({
                  , x = Position_Location
                  , y = Percent
                  , type = "bar") %>% 
-      layout(xaxis = x
-             , yaxis = y
-             , margin = m) %>% 
-      config(displayModeBar = F)
+          layout(xaxis = x
+                 , yaxis = y
+                 , margin = m) %>% 
+          config(displayModeBar = F)
     
     # print plotly build
     p
@@ -637,12 +757,12 @@ output$locnPlot <- renderPlotly({
                  , y = HC
                  , group = BSL
                  , type = "bar") %>% 
-      layout(barmode ="stack"
-             , xaxis = x
-             , yaxis = y
-             , margin = m
-             , showlegend = F) %>% 
-      config(displayModeBar = F)
+          layout(barmode ="stack"
+                 , xaxis = x
+                 , yaxis = y
+                 , margin = m
+                 , showlegend = F) %>% 
+          config(displayModeBar = F)
     
     # print plotly build
     p
@@ -658,12 +778,12 @@ output$locnPlot <- renderPlotly({
                  , y = Percent
                  , group = BSL
                  , type = "bar") %>% 
-      layout(barmode ="stack"
-             , xaxis = x
-             , yaxis = y
-             , margin = m
-             , showlegend = F) %>% 
-      config(displayModeBar = F)
+         layout(barmode ="stack"
+                , xaxis = x
+                , yaxis = y
+                , margin = m
+                , showlegend = F) %>% 
+         config(displayModeBar = F)
     
     # print plotly build
     p
@@ -683,16 +803,13 @@ output$gndrPlot <- renderPlotly({
   # plot variables
   m <- list(t = 25, b = 15)
   
-  # gender plot data
-  gndrPrfl <- as.data.frame(table(wddDataset2()$Gender))
-  
   # plotly layout
-  p <- plot_ly(data = gndrPrfl
+  p <- plot_ly(data = gndrPrfl()
                , labels = Var1
                , values = Freq
                , type = "pie") %>% 
-    layout(margin = m) %>% 
-    config(displayModeBar = F)
+       layout(margin = m) %>% 
+       config(displayModeBar = F)
   
   # print plotly build
   p
@@ -710,16 +827,13 @@ output$nesbPlot <- renderPlotly({
   # plot variables
   m <- list(t = 25, b = 15)
   
-  # nesb data 
-  nesbPrfl <- as.data.frame(table(wddDataset2()$NESB_Sum))
-  
   # plotly layout
-  p <- plot_ly(data = nesbPrfl
+  p <- plot_ly(data = nesbPrfl()
                , labels = Var1
                , values = Freq
                , type = "pie") %>% 
-    layout(margin = m) %>% 
-    config(displayModeBar = F)
+       layout(margin = m) %>% 
+       config(displayModeBar = F)
   
   # print plotly build
   p
@@ -737,16 +851,13 @@ output$dsblPlot <- renderPlotly({
   # plot variables
   m <- list(t = 25, b = 15)
   
-  # disability data
-  dsblPrfl <- as.data.frame(table(wddDataset2()$Disability_HC))
-  
   # plotly layout
-  p <- plot_ly(data = dsblPrfl
+  p <- plot_ly(data = dsblPrfl()
                , labels = Var1
                , values = Freq
                , type = "pie") %>% 
-    layout(margin = m) %>% 
-    config(displayModeBar = F)
+       layout(margin = m) %>% 
+       config(displayModeBar = F)
   
   # print plotly build
   p
@@ -764,20 +875,119 @@ output$indgPlot <- renderPlotly({
   # plot variables
   m <- list(t = 25, b = 15)
   
-  # indigenous data
-  indgPrfl <- as.data.frame(table(wddDataset2()$Indigenous_HC))
-  
   # plotly layout
-  p <- plot_ly(data = indgPrfl
+  p <- plot_ly(data = indgPrfl()
                , labels = Var1
                , values = Freq
                , type = "pie") %>% 
-    layout(margin = m) %>% 
-    config(displayModeBar = F)
+       layout(margin = m) %>% 
+       config(displayModeBar = F)
   
   # print plotly build
   p
   
 })
+
+#__________________________________________________________________________________________________#
+
+# Learning and development plots ####
+output$mdpPlot <- renderPlotly({
   
+  # error message to user where no data exists in selection
+  data.msg()
+  
+  # plot variables
+  m <- list(t = 25, b = 15)
+  
+  # plotly layout
+  p <- plot_ly(data = mdpPrfl()
+               , labels = Var1
+               , values = Freq
+               , type = "pie") %>% 
+       layout(margin = m) %>% 
+       config(displayModeBar = F)
+  
+  # print plotly build
+  p
+  
+})
+
+output$ldPlot <- renderPlotly({
+  
+  # error message to user where no data exists in selection
+  data.msg()
+  
+  # plot variables
+  m <- list(t = 25, b = 40, l = 80)  
+  
+  # plotly layout
+  p <- plot_ly(data = ldPrfl()
+               , x = value
+               , y = key
+               , type = "bar"
+               , orientation = "h") %>% 
+       layout(margin = m
+              , yaxis = list(title = "")
+              , xaxis = list(title = "Events per HC")) %>% 
+       config(displayModeBar = F)
+  
+  # print plotly build
+  p
+  
+})
+
+# External training cost plot
+output$costTbl <- renderTable({
+  
+  costPrfl()
+      
+})
+
+#__________________________________________________________________________________________________#
+
+# Mobility plots
+output$mobPlot <- renderPlotly({
+  
+  # error message to user where no data exists in selection
+  data.msg()
+  
+  # plot variables
+  m <- list(t = 25, b = 15)
+  
+  # plotly layout
+  p <- plot_ly(data = mobPrfl()
+               , labels = Var1
+               , values = Freq
+               , type = "pie") %>% 
+       layout(margin = m) %>% 
+       config(displayModeBar = F)
+  
+  # print plotly build
+  p
+  
+})
+
+output$oomPlot <- renderPlotly({
+  
+  # error message to user where no data exists in selection
+  data.msg()
+  
+  # plot variables
+  m <- list(t = 25, b = 15)
+  
+  # plotly layout
+  p <- plot_ly(data = oomPrfl()
+               , labels = Var1
+               , values = Freq
+               , type = "pie") %>% 
+       layout(margin = m) %>% 
+       config(displayModeBar = F)
+  
+  # print plotly build
+  p
+  
+})
+
+#__________________________________________________________________________________________________#  
+
 }

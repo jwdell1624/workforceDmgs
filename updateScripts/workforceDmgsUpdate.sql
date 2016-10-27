@@ -29,6 +29,16 @@ a.Snpsht_dt                         AS Snapshot_Date
 , c.eed_nesb2_cnt                   AS NESB2_HC
 , c.eed_indgns_cnt                  AS Indigenous_HC
 , c.eed_dsblty_cnt                  AS Disability_HC
+, c.Mblty_Applcntn_Ind              AS Mobility_Indicator
+, c.eRecruit_OOM_Ind                AS OOM_Indicator
+, c.eRecruit_OOM_Cnt                AS OOM_Count
+, c.MDP_Crs_Prtcpn_Txt              AS MDP_Status
+, c.Crs_Cmpltn_RATE                 AS MDP_Completion_Percent
+, c.R12_F2F_Nbr_Int                 AS F2F_Count
+, c.R12_eLRN_Nbr                    AS eLRN_Count
+, c.R12_Extrnl_Num                  AS External_Count
+, c.R12_Extrnl_Cst                  AS External_Cost
+, c.Mgr_Ind                         AS Manager_Indicator
 FROM epgnrldmv.fact_sap_snpsht_dmgs AS a
 LEFT JOIN eadppert.dim_branch       AS b
 ON (a.Snpsht_dt = b.Snpsht_dt AND a.Tax_Ofc_Org_Unt_Id = b.Tax_Ofc_Org_Unt_Id)

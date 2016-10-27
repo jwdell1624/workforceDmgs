@@ -3,6 +3,7 @@ suppressMessages(library(readr))
 suppressMessages(library(plotly))
 suppressMessages(library(ggplot2))
 suppressMessages(library(dplyr))
+suppressMessages(library(tidyr))
 
 # Read data
 wddDmgs <- read_csv("data/wddDmgs.csv")
@@ -15,18 +16,26 @@ wddDmgs <- read_csv("data/wddDmgs.csv")
 wddDmgs <- subset(wddDmgs, wddDmgs$Cost_Centre_Text != "CSA External Staff")
 
 # remove na's 
-wddDmgs$NESB1_HC      <- ifelse(is.na(wddDmgs$NESB1_HC), 0, 1)
-wddDmgs$NESB2_HC      <- ifelse(is.na(wddDmgs$NESB2_HC), 0, 1)
-wddDmgs$Disability_HC <- ifelse(is.na(wddDmgs$Disability_HC), 0, 1)
-wddDmgs$Indigenous_HC <- ifelse(is.na(wddDmgs$Indigenous_HC), 0, 1)
+wddDmgs$NESB1_HC               <- ifelse(is.na(wddDmgs$NESB1_HC), 0, 1)
+wddDmgs$NESB2_HC               <- ifelse(is.na(wddDmgs$NESB2_HC), 0, 1)
+wddDmgs$Disability_HC          <- ifelse(is.na(wddDmgs$Disability_HC), 0, 1)
+wddDmgs$Indigenous_HC          <- ifelse(is.na(wddDmgs$Indigenous_HC), 0, 1)
+wddDmgs$MDP_Completion_Percent <- ifelse(is.na(wddDmgs$MDP_Completion_Percent), 0, wddDmgs$MDP_Completion_Percent)
+wddDmgs$F2F_Count              <- ifelse(is.na(wddDmgs$F2F_Count), 0, wddDmgs$F2F_Count)
+wddDmgs$eLRN_Count             <- ifelse(is.na(wddDmgs$eLRN_Count), 0, wddDmgs$eLRN_Count)
+wddDmgs$External_Count         <- ifelse(is.na(wddDmgs$External_Count), 0, wddDmgs$External_Count)
+wddDmgs$External_Cost          <- ifelse(is.na(wddDmgs$External_Cost), 0, wddDmgs$External_Cost)
 
 # sum nesb1 and nesb2 
 wddDmgs$NESB_Sum <- wddDmgs$NESB1_HC + wddDmgs$NESB2_HC
 
 # re-format to Yes/No for pie charts
-wddDmgs$NESB_Sum      <- ifelse(wddDmgs$NESB_Sum == 0, "No", "Yes")
-wddDmgs$Disability_HC <- ifelse(wddDmgs$Disability_HC == 0, "No", "Yes")
-wddDmgs$Indigenous_HC <- ifelse(wddDmgs$Indigenous_HC == 0, "No", "Yes")
+wddDmgs$NESB_Sum           <- ifelse(wddDmgs$NESB_Sum == 0, "No", "Yes")
+wddDmgs$Disability_HC      <- ifelse(wddDmgs$Disability_HC == 0, "No", "Yes")
+wddDmgs$Indigenous_HC      <- ifelse(wddDmgs$Indigenous_HC == 0, "No", "Yes")
+wddDmgs$Mobility_Indicator <- ifelse(wddDmgs$Mobility_Indicator == "N", "No", "Yes")
+wddDmgs$OOM_Indicator      <- ifelse(wddDmgs$OOM_Indicator == "N", "No", "Yes")
+wddDmgs$Manager_Indicator  <- ifelse(wddDmgs$Manager_Indicator == "N", "No", "Yes")
 
 # re-format as factor for Tenure, Classification and Age Range plot order
 wddDmgs$Actual_Classification <- factor(wddDmgs$Actual_Classification

@@ -14,6 +14,16 @@ header <- dashboardHeader(
 
 # Widgets for dahsboard sidebar
 sidebar <- dashboardSidebar(
+  selectInput(
+    "wddSelEmpTyp"
+    , label = "Choose employment filter:"
+    , choices = c("All Employment Types", "Ongoing", "Non-Ongoing", "Casual", "External") #explicitly ordered
+    , selected = "All Employment Types"), 
+  selectInput(
+    "wddSelMgr"
+    , label = "Manager Indicator:"
+    , choices = c("All", sort(unique(wddDmgs$Manager_Indicator)))
+    , selected = "All"),
   radioButtons(
     "wddSelView"
     , label = "Choose result type:"
@@ -71,12 +81,7 @@ sidebar <- dashboardSidebar(
     condition = "input.wddSelOrg == 'Site'"
     , selectInput("wddSelSite"
                   , label = "Choose Site:"
-                  , choices = sort(unique(wddDmgs$Position_Location)))), 
-  selectInput(
-    "wddSelEmpTyp"
-    , label = "Choose employment filter:"
-    , choices = c("All Employment Types", "Ongoing", "Non-Ongoing", "Casual", "External")
-    , selected = "All Employment Types")
+                  , choices = sort(unique(wddDmgs$Position_Location))))
 )
 
 # Build dashboard layout
@@ -92,21 +97,14 @@ body <- dashboardBody(
   ),
   
   
-#   tabBox( 
-#     "ageTab"
-#     , title = "Age"
-#     , side = "right"
-#     , tabPanel("By ATO Tnr", plotlyOutput("ageTnrPlot", height = plot.height-2))
-#     , tabPanel("All",        plotlyOutput("agePlot2", height = plot.height-2))
-#     , tabPanel("5yrs",       plotlyOutput("agePlot", height = plot.height-2))
-#     , selected = "5yrs"),
-
-  box(
-    title = "Age"
-    , solidHeader = TRUE
-    , collapsible = TRUE
-    , status = "primary"
-    , plotlyOutput("agePlot", height = plot.height)),
+  tabBox(
+    "ageTnrTab"
+    , title = "Age and Tenure"
+    , side = "right"
+    , tabPanel("Age by Tnr", plotlyOutput("ageTnrPlot", height = plot.height-2))
+    , tabPanel("ATO Tnr",    plotlyOutput("atoPlot", height = plot.height-2))
+    , tabPanel("Age",        plotlyOutput("agePlot", height = plot.height-2))
+    , selected = "Age"),
   
   box(
     title = "Classification"
@@ -115,22 +113,36 @@ body <- dashboardBody(
     , status = "info"
     , plotlyOutput("classnPlot", height = plot.height)),
   
-  box(
-    title = "ATO Tenure"
-    , solidHeader = TRUE
-    , collapsible = TRUE
-    , status = "warning"
-    , plotlyOutput("atoPlot", height = plot.height)),
-  
   tabBox( 
     "diversityTab"
     , title = "Diversity"
     , side = "right"
-    , tabPanel("Indigenous", plotlyOutput("indgPlot", height = plot.height))
-    , tabPanel("Disability", plotlyOutput("dsblPlot", height = plot.height))
-    , tabPanel("NESB",       plotlyOutput("nesbPlot", height = plot.height))
-    , tabPanel("Gender",     plotlyOutput("gndrPlot", height = plot.height))
-    , selected = "Gender"),
+    , tabPanel("Indigenous", plotlyOutput("indgPlot", height = plot.height-2))
+    , tabPanel("Disability", plotlyOutput("dsblPlot", height = plot.height-2))
+    , tabPanel("NESB",       plotlyOutput("nesbPlot", height = plot.height-2))
+    , tabPanel("Gender",     plotlyOutput("gndrPlot", height = plot.height-2))
+    , selected = "Gender"
+    , width = 4),
+  
+  tabBox(
+    "learningTab"
+    , title = "Learning & Development"
+    , side = "right"
+    , tabPanel("External Cost",  tableOutput("costTbl"))
+    , tabPanel("Events Rate", plotlyOutput("ldPlot", height = plot.height-2))
+    , tabPanel("MDP",          plotlyOutput("mdpPlot", height = plot.height-2))
+    , selected = "MDP"
+    , width = 4),
+  
+  tabBox(
+    "mobilityTab"
+    , title = "Mobility"
+    , side = "right"
+    , tabPanel("") #kludge to match tabBox heights
+    , tabPanel("Order of Merit",    plotlyOutput("oomPlot", height = plot.height-2))
+    , tabPanel("Mobility Register", plotlyOutput("mobPlot", height = plot.height-2))
+    , selected = "Mobility Register"
+    , width = 4),
   
   box(
     title = uiOutput("jfGrpTitle")
@@ -145,6 +157,8 @@ body <- dashboardBody(
     , collapsible = TRUE
     , status = "danger"
     , plotlyOutput("locnPlot", height = plot.height))
+  
+  
 )
 
 # Render dashboard
