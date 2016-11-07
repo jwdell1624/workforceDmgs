@@ -1,5 +1,5 @@
 # define plot height variable
-plot.height <- 245
+plot.height <- 250
 
 # Create dashboard header
 header <- dashboardHeader(
@@ -81,7 +81,9 @@ sidebar <- dashboardSidebar(
     condition = "input.wddSelOrg == 'Site'"
     , selectInput("wddSelSite"
                   , label = "Choose Site:"
-                  , choices = sort(unique(wddDmgs$Position_Location))))
+                  , choices = sort(unique(wddDmgs$Position_Location)))),
+  br(),
+  div(style="padding-left: 12px", actionButton("buildDashboard", label = "Refresh Dashboard", class = "btn-primary"))
 )
 
 # Build dashboard layout
@@ -96,68 +98,78 @@ body <- dashboardBody(
     tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
   ),
   
+  fluidRow(
   
-  tabBox(
-    "ageTnrTab"
-    , title = "Age and Tenure"
-    , side = "right"
-    , tabPanel("Age by Tnr", plotlyOutput("ageTnrPlot", height = plot.height-2))
-    , tabPanel("ATO Tnr",    plotlyOutput("atoPlot", height = plot.height-2))
-    , tabPanel("Age",        plotlyOutput("agePlot", height = plot.height-2))
-    , selected = "Age"),
+    tabBox(
+      "ageTnrTab"
+      , title = "Age and Tenure"
+      , side = "right"
+      , tabPanel("Age by Tnr", plotlyOutput("ageTnrPlot", height = plot.height))
+      , tabPanel("ATO Tnr",    plotlyOutput("atoPlot", height = plot.height))
+      , tabPanel("Age",        plotlyOutput("agePlot", height = plot.height))
+      , selected = "Age"),
+    
+    box(
+      title = "Classification"
+      , solidHeader = TRUE
+      , collapsible = TRUE
+      , status = "info"
+      , plotlyOutput("classnPlot", height = plot.height))
   
-  box(
-    title = "Classification"
-    , solidHeader = TRUE
-    , collapsible = TRUE
-    , status = "info"
-    , plotlyOutput("classnPlot", height = plot.height)),
+  ), 
   
-  tabBox( 
-    "diversityTab"
-    , title = "Diversity"
-    , side = "right"
-    , tabPanel("Indigenous", plotlyOutput("indgPlot", height = plot.height-2))
-    , tabPanel("Disability", plotlyOutput("dsblPlot", height = plot.height-2))
-    , tabPanel("NESB",       plotlyOutput("nesbPlot", height = plot.height-2))
-    , tabPanel("Gender",     plotlyOutput("gndrPlot", height = plot.height-2))
-    , selected = "Gender"
-    , width = 4),
+  fluidRow(
   
-  tabBox(
-    "learningTab"
-    , title = "Learning & Development"
-    , side = "right"
-    , tabPanel("External Cost",  tableOutput("costTbl"))
-    , tabPanel("Events Rate", plotlyOutput("ldPlot", height = plot.height-2))
-    , tabPanel("MDP",          plotlyOutput("mdpPlot", height = plot.height-2))
-    , selected = "MDP"
-    , width = 4),
+    tabBox( 
+      "diversityTab"
+      , title = "Diversity"
+      , side = "right"
+      , tabPanel("Indigenous", plotlyOutput("indgPlot", height = plot.height))
+      , tabPanel("Disability", plotlyOutput("dsblPlot", height = plot.height))
+      , tabPanel("NESB", plotlyOutput("nesbPlot", height = plot.height))
+      , tabPanel("Gender", plotlyOutput("gndrPlot", height = plot.height))
+      , selected = "Gender"
+      , width = 4),
+    
+    tabBox(
+      "learningTab"
+      , title = "Learning & Development"
+      , side = "right"
+      , tabPanel("External Cost", tableOutput("costTbl"))
+      , tabPanel("Events Rate", plotlyOutput("ldPlot", height = plot.height))
+      , tabPanel("MDP", plotlyOutput("mdpPlot", height = plot.height))
+      , selected = "MDP"
+      , width = 4),
+    
+    tabBox(
+      "mobilityTab"
+      , title = "Mobility"
+      , side = "right"
+      , tabPanel("") #kludge to match tabBox heights
+      , tabPanel("Order of Merit", plotlyOutput("oomPlot", height = plot.height))
+      , tabPanel("Mobility Register", plotlyOutput("mobPlot", height = plot.height))
+      , selected = "Mobility Register"
+      , width = 4)
   
-  tabBox(
-    "mobilityTab"
-    , title = "Mobility"
-    , side = "right"
-    , tabPanel("") #kludge to match tabBox heights
-    , tabPanel("Order of Merit",    plotlyOutput("oomPlot", height = plot.height-2))
-    , tabPanel("Mobility Register", plotlyOutput("mobPlot", height = plot.height-2))
-    , selected = "Mobility Register"
-    , width = 4),
+  ), 
   
-  box(
-    title = uiOutput("jfGrpTitle")
-    , solidHeader = TRUE
-    , collapsible = TRUE
-    , status = "success"
-    , plotlyOutput("jfPlot", height = plot.height)),
+  fluidRow(
   
-  box(
-    title = uiOutput("locnGrpTitle")
-    , solidHeader = TRUE
-    , collapsible = TRUE
-    , status = "danger"
-    , plotlyOutput("locnPlot", height = plot.height))
-  
+    box(
+      title = uiOutput("jfGrpTitle")
+      , solidHeader = TRUE
+      , collapsible = TRUE
+      , status = "success"
+      , plotlyOutput("jfPlot", height = plot.height)),
+    
+    box(
+      title = uiOutput("locnGrpTitle")
+      , solidHeader = TRUE
+      , collapsible = TRUE
+      , status = "danger"
+      , plotlyOutput("locnPlot", height = plot.height))
+    
+    )
   
 )
 
