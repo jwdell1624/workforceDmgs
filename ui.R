@@ -18,12 +18,7 @@ sidebar <- dashboardSidebar(
     "wddSelEmpTyp"
     , label = "Choose employment filter:"
     , choices = c("All Employment Types", "Ongoing", "Non-Ongoing", "Casual", "External") #explicitly ordered
-    , selected = "All Employment Types"), 
-  selectInput(
-    "wddSelMgr"
-    , label = "Manager Indicator:"
-    , choices = c("All", sort(unique(wddDmgs$Manager_Indicator)))
-    , selected = "All"),
+    , selected = "All Employment Types"),
   radioButtons(
     "wddSelView"
     , label = "Choose result type:"
@@ -40,7 +35,12 @@ sidebar <- dashboardSidebar(
                      , "Team/Org.Unit"
                      , "Cost Centre"
                      , "Job Family"
-                     , "Site")
+                     , "Site"
+                     , "Manager"
+                     , "Gender"
+                     , "NESB"
+                     , "Disability"
+                     , "Indigenous")
     , selected = "ATO"),
   conditionalPanel(
     condition = "input.wddSelOrg == 'Group'"
@@ -82,6 +82,32 @@ sidebar <- dashboardSidebar(
     , selectInput("wddSelSite"
                   , label = "Choose Site:"
                   , choices = sort(unique(wddDmgs$Position_Location)))),
+  conditionalPanel(
+    condition = "input.wddSelOrg == 'Manager'"
+    , selectInput("wddSelMgr"
+                  , label = "Choose Manager Indicator:"
+                  , choices = sort(unique(wddDmgs$Manager_Indicator)))),
+  conditionalPanel(
+    condition = "input.wddSelOrg == 'Gender'"
+    , selectInput("wddSelGndr"
+                  , label = "Choose Gender:"
+                  , choices = sort(unique(wddDmgs$Gender)))),
+  conditionalPanel(
+    condition = "input.wddSelOrg == 'NESB'"
+    , selectInput("wddSelNESB"
+                  , label = "Choose NESB Indicator:"
+                  , choices = sort(unique(wddDmgs$NESB_Sum)))),
+  conditionalPanel(
+    condition = "input.wddSelOrg == 'Disability'"
+    , selectInput("wddSelDsbl"
+                  , label = "Choose Disability Indicator:"
+                  , choices = sort(unique(wddDmgs$Disability_HC)))),
+  conditionalPanel(
+    condition = "input.wddSelOrg == 'Indigenous'"
+    , selectInput("wddSelIndg"
+                  , label = "Choose Indigenous Indicator:"
+                  , choices = sort(unique(wddDmgs$Indigenous_HC)))),
+  
   br(),
   div(style="padding-left: 12px", actionButton("buildDashboard", label = "Refresh Dashboard", class = "btn-primary"))
 )

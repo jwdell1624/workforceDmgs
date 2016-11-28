@@ -68,28 +68,6 @@ wddDataset <- reactive({
 
 #__________________________________________________________________________________________________#
 
-# then subset by manager or non-manager
-wddDataset1 <- reactive({
-  
-  # Take a dependency on action button
-  input$buildDashboard
-  
-  isolate({
-  
-    if (input$wddSelMgr == "All"){
-      wddDmgsSbst1 <- wddDataset()
-    } else {
-      wddDmgsSbst1 <- subset(wddDataset(), wddDataset()$Manager_Indicator == input$wddSelMgr)
-    }
-      # print dataframe
-      wddDmgsSbst1
-      
-  })
-  
-})
-
-#__________________________________________________________________________________________________#
-
 # then subset by lens option
 wddDataset2 <- reactive({
   
@@ -99,27 +77,36 @@ wddDataset2 <- reactive({
   isolate({
   
     if (input$wddSelOrg == "ATO"){
-      df <- wddDataset1()
+      df <- wddDataset()
     } else if (input$wddSelOrg == "Group"){
-      df <- subset(wddDataset1(), wddDataset1()$Subplan == input$wddSelGrp)
+      df <- subset(wddDataset(), wddDataset()$Subplan == input$wddSelGrp)
     } else if (input$wddSelOrg == "BSL"){
-      df <- subset(wddDataset1(), wddDataset1()$BSL == input$wddSelBSL)
+      df <- subset(wddDataset(), wddDataset()$BSL == input$wddSelBSL)
     } else if (input$wddSelOrg == "Branch"){
-      df <- subset(wddDataset1(), wddDataset1()$Org_Unit_Branch == input$wddSelBranch)
+      df <- subset(wddDataset(), wddDataset()$Org_Unit_Branch == input$wddSelBranch)
     } else if (input$wddSelOrg == "Team/Org.Unit"){
-      df <- subset(wddDataset1(), wddDataset1()$Org_Unit_Team == input$wddSelTeam)
+      df <- subset(wddDataset(), wddDataset()$Org_Unit_Team == input$wddSelTeam)
     } else if (input$wddSelOrg == "Cost Centre"){
-      df <- subset(wddDataset1(), wddDataset1()$Cost_Centre_Code == input$wddSelCstCntr)
+      df <- subset(wddDataset(), wddDataset()$Cost_Centre_Code == input$wddSelCstCntr)
     } else if (input$wddSelOrg == "Classification"){
-      df <- subset(wddDataset1(), wddDataset1()$Actual_Classification == input$wddSelClassn)
+      df <- subset(wddDataset(), wddDataset()$Actual_Classification == input$wddSelClassn)
     } else if (input$wddSelOrg == "Job Family"){
-      df <- subset(wddDataset1(), wddDataset1()$Job_Family == input$wddSelJob)
+      df <- subset(wddDataset(), wddDataset()$Job_Family == input$wddSelJob)
     } else if (input$wddSelOrg == "Site"){
-      df <- subset(wddDataset1(), wddDataset1()$Position_Location == input$wddSelSite)
+      df <- subset(wddDataset(), wddDataset()$Position_Location == input$wddSelSite)
+    } else if (input$wddSelOrg == "Manager"){
+      df <- subset(wddDataset(), wddDataset()$Manager_Indicator == input$wddSelMgr)
+    } else if (input$wddSelOrg == "Gender"){
+      df <- subset(wddDataset(), wddDataset()$Gender == input$wddSelGndr)
+    } else if (input$wddSelOrg == "NESB"){
+      df <- subset(wddDataset(), wddDataset()$NESB_Sum == input$wddSelNESB)
+    } else if (input$wddSelOrg == "Disability"){
+      df <- subset(wddDataset(), wddDataset()$Disability_HC == input$wddSelDsbl)
+    } else if (input$wddSelOrg == "Indigenous"){
+      df <- subset(wddDataset(), wddDataset()$Indigenous_HC == input$wddSelIndg)
     }
       # print dataframe
       df
-  
   })
   
 })
