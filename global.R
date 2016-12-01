@@ -41,7 +41,7 @@ wddDmgs$Manager_Indicator  <- ifelse(wddDmgs$Manager_Indicator == "N", "No", "Ye
 wddDmgs$Actual_Classification <- factor(wddDmgs$Actual_Classification
                                         , levels = c("Not assigned","EXT","CAD","APS1","APS2","APS3"
                                                      ,"APS4","APS5","APS6","EL1","EL21","EL22","SES1"
-                                                     ,"SES2","SES3"))
+                                                     ,"SES2"))
 wddDmgs$ATO_Tenure_Range <- factor(wddDmgs$ATO_Tenure_Range
                                    , levels = c("Not assigned", "< 5","5 - 9", "10 - 14","15 - 19"
                                                 ,"20 - 24", "25 - 29","30 - 34","35 - 39","40 - 44"

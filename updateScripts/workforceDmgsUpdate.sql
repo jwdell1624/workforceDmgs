@@ -8,7 +8,10 @@ a.Snpsht_dt                         AS Snapshot_Date
 , a.Tax_Ofc_Org_Unt_Id              AS Org_Unit_ID
 , b.Tax_Ofc_Org_Unt_Brnch           AS Org_Unit_Branch
 , b.Level_4                         AS Org_Unit_Team
-, a.Pblc_Srvc_Clsn_Cd               AS Actual_Classification
+, CASE
+    WHEN a.Pblc_Srvc_Clsn_Cd = 'SES3' THEN 'SES2'
+  ELSE a.Pblc_Srvc_Clsn_Cd
+END AS                              AS Actual_Classification
 , a.Job_Fmly_Txt                    AS Job_Family
 , a.Tax_Ofc_Prsn_Hd_Cnt             AS HC
 , a.Full_Tm_Eqvlnt_Pct              AS HR_FTE

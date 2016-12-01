@@ -109,7 +109,9 @@ sidebar <- dashboardSidebar(
                   , choices = sort(unique(wddDmgs$Indigenous_HC)))),
   
   br(),
-  div(style="padding-left: 12px", actionButton("buildDashboard", label = "Refresh Dashboard", class = "btn-primary"))
+  div(style="padding-left: 12px", actionButton("buildDashboard", label = "Refresh Dashboard", class = "btn-primary")),
+  br(), 
+  p(style="padding-left: 12px; padding-right: 12px", "Note that for privacy purposes SES3 data has been aggregated into the SES2 classification.")
 )
 
 # Build dashboard layout
