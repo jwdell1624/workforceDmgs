@@ -11,7 +11,7 @@ a.Snpsht_dt                         AS Snapshot_Date
 , CASE
     WHEN a.Pblc_Srvc_Clsn_Cd = 'SES3' THEN 'SES2'
   ELSE a.Pblc_Srvc_Clsn_Cd
-END AS                              AS Actual_Classification
+END                                 AS Actual_Classification
 , a.Job_Fmly_Txt                    AS Job_Family
 , a.Tax_Ofc_Prsn_Hd_Cnt             AS HC
 , a.Full_Tm_Eqvlnt_Pct              AS HR_FTE
