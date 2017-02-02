@@ -42,6 +42,9 @@ END                                 AS Actual_Classification
 , c.R12_Extrnl_Num                  AS External_Count
 , c.R12_Extrnl_Cst                  AS External_Cost
 , c.Mgr_Ind                         AS Manager_Indicator
+, c.Wkfc_Segment                    AS Work_Segment
+, c.Wkfce_Function                  AS Work_Function
+, c.Wkfc_Comms_Persona              AS Comms_Persona
 FROM epgnrldmv.fact_sap_snpsht_dmgs AS a
 LEFT JOIN eadppert.dim_branch       AS b
 ON (a.Snpsht_dt = b.Snpsht_dt AND a.Tax_Ofc_Org_Unt_Id = b.Tax_Ofc_Org_Unt_Id)

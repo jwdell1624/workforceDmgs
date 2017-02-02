@@ -123,7 +123,7 @@ wddOrgPrfl <- reactive({
              , BSL) %>% 
     summarise(HC = n()) %>% 
     ungroup() %>% 
-    mutate(Percent = round(HC/sum(HC)*100,2)) ->
+    mutate(Percent = round(HC/sum(HC)*100, 2)) ->
   orgPrfl
   
 })
@@ -154,7 +154,7 @@ wddAgeTnrPrfl <- reactive({
              , ATO_Tenure_Range) %>% 
     summarise(HC = n()) %>% 
     ungroup() %>% 
-    mutate(Percent = round(HC/sum(HC)*100,2)) ->
+    mutate(Percent = round(HC/sum(HC)*100, 2)) ->
   ageTnrPrfl  
   
 })
@@ -167,7 +167,7 @@ wddAgePrfl <- reactive({
     group_by(Age_Range_5yr) %>%
     summarise(HC = n()) %>% 
     ungroup() %>% 
-    mutate(Percent = round(HC/sum(HC)*100,2)) ->
+    mutate(Percent = round(HC/sum(HC)*100, 2)) ->
   agePrfl
   
 })
@@ -180,7 +180,7 @@ wddAgePrfl2 <- reactive({
     group_by(Age_Integer) %>%
     summarise(HC = n()) %>% 
     ungroup() %>% 
-    mutate(Percent = round(HC/sum(HC)*100,2)
+    mutate(Percent = round(HC/sum(HC)*100, 2)
            , Mean = mean.age()
            , Median = med.age()) %>% 
     filter(Age_Integer > 10 & Age_Integer < 85) ->
@@ -198,7 +198,7 @@ wddClassnPrfl <- reactive({
     group_by(Actual_Classification) %>%
     summarise(HC = n()) %>% 
     ungroup() %>% 
-    mutate(Percent = round(HC/sum(HC)*100,2)) ->
+    mutate(Percent = round(HC/sum(HC)*100, 2)) ->
   classnPrfl    
   
 })
@@ -213,7 +213,7 @@ wddTnrPrfl <- reactive({
     group_by(ATO_Tenure_Range) %>%
     summarise(HC = n()) %>% 
     ungroup() %>% 
-    mutate(Percent = round(HC/sum(HC)*100,2)) ->
+    mutate(Percent = round(HC/sum(HC)*100, 2)) ->
   tnrPrfl    
   
 })
@@ -228,8 +228,22 @@ wddJobPrfl <- reactive({
     group_by(Job_Family) %>%
     summarise(HC = n()) %>% 
     ungroup() %>% 
-    mutate(Percent = round(HC/sum(HC)*100,2)) ->
+    mutate(Percent = round(HC/sum(HC)*100, 2)) ->
   jfPrfl
+  
+})
+
+# Comms Persona data
+wddCommsPrfl <- reactive({
+  
+  as.data.frame(table(wddDataset2()$Comms_Persona))
+    
+})
+
+# Workforce Function data
+wddFuncPrfl <- reactive({
+  
+  as.data.frame(table(wddDataset2()$Work_Function))
   
 })
 
@@ -243,7 +257,7 @@ wddLocnPrfl <- reactive({
     group_by(Position_Location) %>%
     summarise(HC = n()) %>% 
     ungroup() %>% 
-    mutate(Percent = round(HC/sum(HC)*100,2)) ->
+    mutate(Percent = round(HC/sum(HC)*100, 2)) ->
   locnPrfl
   
 })
@@ -299,9 +313,9 @@ ldPrfl <- reactive({
            , eLRN_Count
            , External_Count) %>% 
     summarise(HC = n()
-              , F2F = round(sum(F2F_Count)/HC,2)
-              , eLEARN = round(sum(eLRN_Count)/HC,2)
-              , EXTERNAL = round(sum(External_Count)/HC,2)) %>% 
+              , F2F = round(sum(F2F_Count)/HC, 2)
+              , eLEARN = round(sum(eLRN_Count)/HC, 2)
+              , EXTERNAL = round(sum(External_Count)/HC, 2)) %>% 
     gather() %>% 
     slice(2:4) ->
   ldPrfl
@@ -315,7 +329,7 @@ costPrfl <- reactive({
     select(External_Cost) %>% 
     summarise(sumCost = sum(External_Cost)
               , HC = n()
-              , avgCost = round(sumCost/HC,2)
+              , avgCost = round(sumCost/HC, 2)
               , maxCost = max(External_Cost)) %>% 
     select(`Total Cost` = sumCost
           , Headcount   = HC
@@ -693,9 +707,11 @@ output$jfPlot <- renderPlotly({
     # plot variables
     x <- list(title = "")
     y <- list(title = input$wddSelView)
-    m <- list(t = 10, r = 30)
     
     if (input$wddSelView == "Headcount" & input$wddSelOrg != "Job Family"){
+      
+      # local margin
+      m <- list(t = 10, r = 30, b = 80)
       
       # plotly layout
       p <- plot_ly(data = wddJobPrfl()
@@ -712,6 +728,9 @@ output$jfPlot <- renderPlotly({
       
     } else if (input$wddSelView == "Percentage" & input$wddSelOrg != "Job Family"){
       
+      # local margin
+      m <- list(t = 10, r = 30, b = 80)
+      
       # plotly layout
       p <- plot_ly(data = wddJobPrfl()
                    , x = Job_Family
@@ -726,6 +745,9 @@ output$jfPlot <- renderPlotly({
       p
       
     } else if (input$wddSelView == "Headcount" & input$wddSelOrg == "Job Family"){
+      
+      # local margin
+      m <- list(t = 10, r = 30)
       
       # plotly layout
       p <- plot_ly(wddOrgPrfl()
@@ -744,6 +766,9 @@ output$jfPlot <- renderPlotly({
       p
       
     } else if (input$wddSelView == "Percentage" & input$wddSelOrg == "Job Family"){
+      
+      # local margin
+      m <- list(t = 10, r = 30)
       
       # plotly layout
       p <- plot_ly(wddOrgPrfl()
@@ -767,6 +792,70 @@ output$jfPlot <- renderPlotly({
   
 })
 
+output$commsPlot <- renderPlotly({
+  
+  # Take a dependency on action button
+  input$buildDashboard
+  
+  isolate({
+    
+    # error message to user where no data exists in selection
+    data.msg()
+    
+    # error message to user where less than 100 records 
+    prvcy.msg()
+    
+    # plot variables
+    m <- list(t = 25, b = 15)
+    
+    # plotly layout
+    p <- plot_ly(data = wddCommsPrfl()
+                 , labels = Var1
+                 , values = Freq
+                   , type = "pie") %>% 
+         layout(margin = m
+                , showlegend = F) %>% 
+         config(displayModeBar = F)
+    
+    # print plotly build
+    p
+    
+  })
+  
+})
+
+output$funcPlot <- renderPlotly({
+  
+  # Take a dependency on action button
+  input$buildDashboard
+  
+  isolate({
+    
+    # error message to user where no data exists in selection
+    data.msg()
+    
+    # error message to user where less than 100 records 
+    prvcy.msg()
+    
+    # plot variables
+    m <- list(t = 25, b = 15)
+    
+    # plotly layout
+    p <- plot_ly(data = wddFuncPrfl()
+                 , labels = Var1
+                 , values = Freq
+                 , type = "pie") %>% 
+      layout(margin = m
+             , showlegend = F) %>% 
+      config(displayModeBar = F)
+    
+    # print plotly build
+    p
+    
+  })
+  
+})
+
 #__________________________________________________________________________________________________#
 
 # Position Location profile plot
@@ -783,9 +872,11 @@ output$locnPlot <- renderPlotly({
     # plot variables
     x <- list(title = "")
     y <- list(title = input$wddSelView)
-    m <- list(t = 10, r = 30)
     
     if (input$wddSelView == "Headcount" & input$wddSelOrg != "Site"){
+      
+      # local margin 
+      m <- list(t = 10, r = 30, b = 80)
       
       # plotly layout
       p <- plot_ly(data = wddLocnPrfl()
@@ -801,6 +892,9 @@ output$locnPlot <- renderPlotly({
       p
       
     } else if (input$wddSelView == "Percentage" & input$wddSelOrg != "Site"){
+      
+      # local margin 
+      m <- list(t = 10, r = 30, b = 80)
       
       # plotly layout
       p <- plot_ly(data = wddLocnPrfl()

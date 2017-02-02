@@ -9,13 +9,13 @@
 suppressMessages(library(atomisc))      # teradataConnect()
 suppressMessages(library(readr))        # fast I/O
 
-# read SQL to extract location data
+# read SQL to extract data
 sql <- paste(read_lines("workforceDmgsUpdate.sql"), collapse="\n")
 
 # submit query to dwh
-con <- teradataConnect()
+con     <- teradataConnect()
 wddDmgs <- dbGetQuery(con, sql)
-dscon <- dbDisconnect(con)
+x       <- dbDisconnect(con)
 
 # print output
 cat(format_csv(wddDmgs))

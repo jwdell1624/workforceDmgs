@@ -14,17 +14,24 @@ header <- dashboardHeader(
 
 # Widgets for dahsboard sidebar
 sidebar <- dashboardSidebar(
+  
   selectInput(
     "wddSelEmpTyp"
     , label = "Choose employment filter:"
-    , choices = c("All Employment Types", "Ongoing", "Non-Ongoing", "Casual", "External") #explicitly ordered
+    , choices = c("All Employment Types"
+                  , "Ongoing"
+                  , "Non-Ongoing"
+                  , "Casual"
+                  , "External") #explicitly ordered
     , selected = "All Employment Types"),
+  
   radioButtons(
     "wddSelView"
     , label = "Choose result type:"
     , choices = list("Headcount"
                      , "Percentage")
     , selected = "Headcount"),
+  
   radioButtons(
     "wddSelOrg"
     , label = "Choose pre-fill option:"
@@ -42,66 +49,79 @@ sidebar <- dashboardSidebar(
                      , "Disability"
                      , "Indigenous")
     , selected = "ATO"),
+  
   conditionalPanel(
     condition = "input.wddSelOrg == 'Group'"
     , selectInput("wddSelGrp"
                   , label = "Choose Group:"
                   , choices = sort(unique(wddDmgs$Subplan)))),
+  
   conditionalPanel(
     condition = "input.wddSelOrg == 'BSL'"
     , selectInput("wddSelBSL"
                   , label = "Choose BSL:"
                   , choices = sort(unique(wddDmgs$BSL)))),
+  
   conditionalPanel(
     condition = "input.wddSelOrg == 'Branch'"
     , selectInput("wddSelBranch"
                   , label = "Choose Branch:"
                   , choices = sort(unique(wddDmgs$Org_Unit_Branch)))),
+  
   conditionalPanel(
     condition = "input.wddSelOrg == 'Team/Org.Unit'"
     , selectInput("wddSelTeam"
                   , label = "Choose Team/Org.Unit:"
                   , choices = sort(unique(wddDmgs$Org_Unit_Team)))),
+  
   conditionalPanel(
     condition = "input.wddSelOrg == 'Cost Centre'"
     , selectInput("wddSelCstCntr"
                   , label = "Choose Cost Centre:"
                   , choices = sort(unique(wddDmgs$Cost_Centre_Code)))),
+  
   conditionalPanel(
     condition = "input.wddSelOrg == 'Classification'"
     , selectInput("wddSelClassn"
                   , label = "Choose Classification:"
                   , choices = sort(unique(wddDmgs$Actual_Classification)))),
+  
   conditionalPanel(
     condition = "input.wddSelOrg == 'Job Family'"
     , selectInput("wddSelJob"
                   , label = "Choose Job Family:"
-                  , choices = sort(unique(wddDmgs$Job_Family)))), 
+                  , choices = sort(unique(wddDmgs$Job_Family)))),
+  
   conditionalPanel(
     condition = "input.wddSelOrg == 'Site'"
     , selectInput("wddSelSite"
                   , label = "Choose Site:"
                   , choices = sort(unique(wddDmgs$Position_Location)))),
+  
   conditionalPanel(
     condition = "input.wddSelOrg == 'Manager'"
     , selectInput("wddSelMgr"
                   , label = "Choose Manager Indicator:"
                   , choices = sort(unique(wddDmgs$Manager_Indicator)))),
+  
   conditionalPanel(
     condition = "input.wddSelOrg == 'Gender'"
     , selectInput("wddSelGndr"
                   , label = "Choose Gender:"
                   , choices = sort(unique(wddDmgs$Gender)))),
+  
   conditionalPanel(
     condition = "input.wddSelOrg == 'NESB'"
     , selectInput("wddSelNESB"
                   , label = "Choose NESB Indicator:"
                   , choices = sort(unique(wddDmgs$NESB_Sum)))),
+  
   conditionalPanel(
     condition = "input.wddSelOrg == 'Disability'"
     , selectInput("wddSelDsbl"
                   , label = "Choose Disability Indicator:"
                   , choices = sort(unique(wddDmgs$Disability_HC)))),
+  
   conditionalPanel(
     condition = "input.wddSelOrg == 'Indigenous'"
     , selectInput("wddSelIndg"
@@ -164,8 +184,8 @@ body <- dashboardBody(
       , title = "Learning & Development"
       , side = "right"
       , tabPanel("External Cost", tableOutput("costTbl"))
-      , tabPanel("Events Rate", plotlyOutput("ldPlot", height = plot.height))
-      , tabPanel("MDP", plotlyOutput("mdpPlot", height = plot.height))
+      , tabPanel("Events Rate", plotlyOutput("ldPlot", height = plot.height + 8))
+      , tabPanel("MDP", plotlyOutput("mdpPlot", height = plot.height + 8))
       , selected = "MDP"
       , width = 4),
     
@@ -174,21 +194,23 @@ body <- dashboardBody(
       , title = "Mobility"
       , side = "right"
       , tabPanel("") #kludge to match tabBox heights
-      , tabPanel("Order of Merit", plotlyOutput("oomPlot", height = plot.height))
-      , tabPanel("Mobility Register", plotlyOutput("mobPlot", height = plot.height))
+      , tabPanel("Order of Merit", plotlyOutput("oomPlot", height = plot.height + 8))
+      , tabPanel("Mobility Register", plotlyOutput("mobPlot", height = plot.height + 8))
       , selected = "Mobility Register"
       , width = 4)
   
   ), 
   
   fluidRow(
-  
-    box(
-      title = uiOutput("jfGrpTitle")
-      , solidHeader = TRUE
-      , collapsible = TRUE
-      , status = "success"
-      , plotlyOutput("jfPlot", height = plot.height)),
+    
+    tabBox(
+      "functionsTab"
+      , title = "Workforce"
+      , side = "right"
+      , tabPanel(uiOutput("jfGrpTitle"), plotlyOutput("jfPlot", height = plot.height))
+      , tabPanel("Function", plotlyOutput("funcPlot", height = plot.height))
+      , tabPanel("Comms Persona", plotlyOutput("commsPlot", height = plot.height))
+      , selected = uiOutput("jfGrpTitle")),
     
     box(
       title = uiOutput("locnGrpTitle")
@@ -196,8 +218,8 @@ body <- dashboardBody(
       , collapsible = TRUE
       , status = "danger"
       , plotlyOutput("locnPlot", height = plot.height))
-    
-    )
+  
+  )
   
 )
 
