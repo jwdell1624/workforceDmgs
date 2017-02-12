@@ -5,8 +5,11 @@ suppressMessages(library(ggplot2))
 suppressMessages(library(dplyr))
 suppressMessages(library(tidyr))
 
-# Read data
-wddDmgs <- read_csv("data/wddDmgs.csv")
+# Set path for data files
+dataPath <- "/proj/workforce/data/shinyApps/"
+
+# Read snapshot data
+wddDmgs <- read_csv(paste0(dataPath, "workforceDmgs/wddDmgs.csv"))
 
 #__________________________________________________________________________________________________#
 
