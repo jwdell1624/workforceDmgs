@@ -9,7 +9,7 @@ suppressMessages(library(tidyr))
 dataPath <- "/proj/workforce/data/shinyApps/"
 
 # Read snapshot data
-wddDmgs <- read_csv(paste0(dataPath, "workforceDmgs/wddDmgs.csv"))
+wddDmgs <- read_csv(paste0(dataPath,"workforceDmgs/wddDmgs.csv"))
 
 #__________________________________________________________________________________________________#
 
