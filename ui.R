@@ -208,8 +208,8 @@ body <- dashboardBody(
       , title = "Workforce"
       , side = "right"
       , tabPanel(uiOutput("jfGrpTitle"), plotlyOutput("jfPlot", height = plot.height))
-      , tabPanel("Function", plotlyOutput("funcPlot", height = plot.height))
-      , tabPanel("Comms Persona", plotlyOutput("commsPlot", height = plot.height))
+      # , tabPanel("Function", plotlyOutput("funcPlot", height = plot.height))
+      # , tabPanel("Comms Persona", plotlyOutput("commsPlot", height = plot.height))
       , selected = uiOutput("jfGrpTitle")),
     
     box(
