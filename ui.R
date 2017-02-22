@@ -5,7 +5,7 @@ plot.height <- 250
 header <- dashboardHeader(
   
   dropdownMenu(type = "notifications"
-               , notificationItem(text = read.table("data/dateComment.txt")
+               , notificationItem(text = read.table(paste0(dataPath, "workforceDmgs/dateComment.txt"))
                , icon("exclamation-circle"))), 
   title = "Workforce Demographics",
   titleWidth = 300
