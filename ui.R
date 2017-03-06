@@ -1,3 +1,4 @@
+function(request) {
 # define plot height variable
 plot.height <- 250
 
@@ -131,6 +132,8 @@ sidebar <- dashboardSidebar(
   br(),
   div(style="padding-left: 12px", actionButton("buildDashboard", label = "Refresh Dashboard", class = "btn-primary")),
   br(),
+  div(style="padding-left: 12px", bookmarkButton(class = "btn-primary", label = "Bookmark")),
+  br(),
   p(style="padding-left: 12px; padding-right: 12px", "This application's data excludes Statutory Office Holders ie. Commissioners."),
   p(style="padding-left: 12px; padding-right: 12px", "For privacy purposes SES3 data has been aggregated into the SES2 classification.")
 )
@@ -229,3 +232,4 @@ dashboardPage(header
               , sidebar
               , body
               , skin = "purple")
+}

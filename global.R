@@ -55,3 +55,6 @@ wddDmgs$Age_Range_5yr <- factor(wddDmgs$Age_Range_5yr
                                              , "65 - 69", ">= 70"))
 
 #__________________________________________________________________________________________________#
+
+# Enable Bookmarking
+enableBookmarking(store = "url")
