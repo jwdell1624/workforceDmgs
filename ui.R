@@ -42,6 +42,7 @@ sidebar <- dashboardSidebar(
                      , "Branch"
                      , "Team/Org.Unit"
                      , "Cost Centre"
+                     , "Classification"
                      , "Job Family"
                      , "Site"
                      , "Manager"
