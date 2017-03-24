@@ -86,7 +86,7 @@ sidebar <- dashboardSidebar(
     condition = "input.wddSelOrg == 'Classification'"
     , selectInput("wddSelClassn"
                   , label = "Choose Classification:"
-                  , choices = sort(unique(wddDmgs$Actual_Classification)))),
+                  , choices = as.character(sort(unique(wddDmgs$Actual_Classification))))),
   
   conditionalPanel(
     condition = "input.wddSelOrg == 'Job Family'"
