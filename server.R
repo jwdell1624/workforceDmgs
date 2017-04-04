@@ -233,31 +233,30 @@ function(input, output, session) {
     
   })
   
-  # Gender plot data
-  gndrPrfl <- reactive({
+  # Diversity summary
+  divPrfl <- reactive({
     
-    as.data.frame(table(wddDataset2()$Gender))
+    test <- wddDataset2()
     
-  })
-  
-  # NESB data 
-  nesbPrfl <- reactive({
+    test$Gender <- ifelse(test$Gender == "Female", "Yes", "No")
     
-    as.data.frame(table(wddDataset2()$NESB_Sum))
+    test %>%
+      select(Gender, NESB_Sum, Disability_HC, Indigenous_HC) %>% 
+      gather() %>% # convert to long format
+      group_by(key, value) %>%
+      summarise(n=n()) %>%
+      mutate(perc = paste0(round(n/sum(n) * 100, 1), "%")
+             , percCount = paste(perc, paste0("(", n, ")"))) %>%
+      select(key, value, percCount) %>% 
+      spread(key, percCount) %>% 
+      rename('Y/N' = value
+             , Disablity = Disability_HC
+             , Female = Gender
+             , Indigenous = Indigenous_HC
+             , NESB = NESB_Sum) -> 
+    divPrfl
     
-  })
-  
-  # Disability data
-  dsblPrfl <- reactive({
-    
-    as.data.frame(table(wddDataset2()$Disability_HC))
-    
-  })
-  
-  # Indigenous data
-  indgPrfl <- reactive({
-    
-    as.data.frame(table(wddDataset2()$Indigenous_HC))
+    replace(divPrfl, is.na(divPrfl), "0% (0)")
     
   })
   
@@ -311,18 +310,25 @@ function(input, output, session) {
     costPrfl
     
   })
-  
-  # Mobility Register data 
+
+  # Mobility summary
   mobPrfl <- reactive({
     
-    as.data.frame(table(wddDataset2()$Mobility_Indicator))
+    wddDataset2() %>%
+      select(Mobility_Indicator, OOM_Indicator) %>% 
+      gather() %>% # convert to long format
+      group_by(key, value) %>%
+      summarise(n=n()) %>%
+      mutate(perc = paste0(round(n/sum(n) * 100, 1), "%")
+             , percCount = paste(perc, paste0("(", n, ")"))) %>%
+      select(key, value, percCount) %>% 
+      spread(key, percCount) %>% 
+      rename('Y/N' = value
+             , 'Mobility Register' = Mobility_Indicator
+             , 'Order of Merit' = OOM_Indicator) -> 
+      mobPrfl
     
-  })
-  
-  # OOM data
-  oomPrfl <- reactive({
-    
-    as.data.frame(table(wddDataset2()$OOM_Indicator))
+    replace(mobPrfl, is.na(mobPrfl), "0% (0)")
     
   })
   
@@ -819,128 +825,16 @@ function(input, output, session) {
   })
   
   #__________________________________________________________________________________________________#
-  
-  # Diversity plots ####
-  output$gndrPlot <- renderPlotly({
+
+  # Diversity Table
+  output$divTable <- renderTable({
     
     # Take a dependency on action button
     input$buildDashboard
     
     isolate({
       
-      # error message to user where no data exists in selection
-      data.msg()
-      
-      # plot variables
-      m <- list(t = 25, b = 15)
-      
-      # plotly layout
-      p <- plot_ly(data = gndrPrfl()
-                   , labels = Var1
-                   , values = Freq
-                   , type = "pie") %>% 
-        layout(margin = m
-               , showlegend = F) %>% 
-        config(displayModeBar = F)
-      
-      # print plotly build
-      p
-      
-    })
-    
-  })
-  
-  output$nesbPlot <- renderPlotly({
-    
-    # Take a dependency on action button
-    input$buildDashboard
-    
-    isolate({
-      
-      # error message to user where no data exists in selection
-      data.msg()
-      
-      # error message to user where less than 100 records 
-      prvcy.msg()
-      
-      # plot variables
-      m <- list(t = 25, b = 15)
-      
-      # plotly layout
-      p <- plot_ly(data = nesbPrfl()
-                   , labels = Var1
-                   , values = Freq
-                   , type = "pie") %>% 
-        layout(margin = m
-               , showlegend = F) %>% 
-        config(displayModeBar = F)
-      
-      # print plotly build
-      p
-      
-    })
-    
-  })
-  
-  output$dsblPlot <- renderPlotly({
-    
-    # Take a dependency on action button
-    input$buildDashboard
-    
-    isolate({
-      
-      # error message to user where no data exists in selection
-      data.msg()
-      
-      # error message to user where less than 100 records 
-      prvcy.msg()
-      
-      # plot variables
-      m <- list(t = 25, b = 15)
-      
-      # plotly layout
-      p <- plot_ly(data = dsblPrfl()
-                   , labels = Var1
-                   , values = Freq
-                   , type = "pie") %>% 
-        layout(margin = m
-               , showlegend = F) %>% 
-        config(displayModeBar = F)
-      
-      # print plotly build
-      p
-      
-    })
-    
-  })
-  
-  output$indgPlot <- renderPlotly({
-    
-    # Take a dependency on action button
-    input$buildDashboard
-    
-    isolate({
-      
-      # error message to user where no data exists in selection
-      data.msg()
-      
-      # error message to user where less than 100 records 
-      prvcy.msg()
-      
-      # plot variables
-      m <- list(t = 25, b = 15)
-      
-      # plotly layout
-      p <- plot_ly(data = indgPrfl()
-                   , labels = Var1
-                   , values = Freq
-                   , type = "pie") %>% 
-        layout(margin = m
-               , showlegend = F) %>% 
-        config(displayModeBar = F)
-      
-      # print plotly build
-      p
+      divPrfl()
       
     })
     
@@ -1026,60 +920,15 @@ function(input, output, session) {
   
   #__________________________________________________________________________________________________#
   
-  # Mobility plots
-  output$mobPlot <- renderPlotly({
+  # Mobility Table
+  output$mobTable <- renderTable({
     
     # Take a dependency on action button
     input$buildDashboard
     
     isolate({
       
-      # error message to user where no data exists in selection
-      data.msg()
-      
-      # plot variables
-      m <- list(t = 25, b = 15)
-      
-      # plotly layout
-      p <- plot_ly(data = mobPrfl()
-                   , labels = Var1
-                   , values = Freq
-                   , type = "pie") %>% 
-        layout(margin = m
-               , showlegend = F) %>% 
-        config(displayModeBar = F)
-      
-      # print plotly build
-      p
-      
-    })
-    
-  })
-  
-  output$oomPlot <- renderPlotly({
-    
-    # Take a dependency on action button
-    input$buildDashboard
-    
-    isolate({
-      
-      # error message to user where no data exists in selection
-      data.msg()
-      
-      # plot variables
-      m <- list(t = 25, b = 15)
-      
-      # plotly layout
-      p <- plot_ly(data = oomPrfl()
-                   , labels = Var1
-                   , values = Freq
-                   , type = "pie") %>% 
-        layout(margin = m,
-               showlegend = F) %>% 
-        config(displayModeBar = F)
-      
-      # print plotly build
-      p
+      mobPrfl()
       
     })
     

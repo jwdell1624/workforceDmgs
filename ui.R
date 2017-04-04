@@ -169,15 +169,12 @@ function(request) {
     
     fluidRow(
       
-      tabBox( 
-        "diversityTab"
+      box( 
+        id = "diversityBox"
+        , style = "padding-left: 0px; padding-top: 50px; padding-bottom: 48.5px"
         , title = "Diversity"
         , side = "right"
-        , tabPanel("Indigenous", plotlyOutput("indgPlot", height = plot.height))
-        , tabPanel("Disability", plotlyOutput("dsblPlot", height = plot.height))
-        , tabPanel("NESB", plotlyOutput("nesbPlot", height = plot.height))
-        , tabPanel("Gender", plotlyOutput("gndrPlot", height = plot.height))
-        , selected = "Gender"
+        , div(style = "font-size: 80%", tableOutput("divTable"))
         , width = 4),
       
       tabBox(
@@ -190,14 +187,12 @@ function(request) {
         , selected = "MDP"
         , width = 4),
       
-      tabBox(
-        "mobilityTab"
+      box(
+        id = "mobilityTab"
+        , style = "padding-top: 50px; padding-bottom: 80.5px"
         , title = "Mobility"
         , side = "right"
-        , tabPanel("") #kludge to match tabBox heights
-        , tabPanel("Order of Merit", plotlyOutput("oomPlot", height = plot.height + 8))
-        , tabPanel("Mobility Register", plotlyOutput("mobPlot", height = plot.height + 8))
-        , selected = "Mobility Register"
+        , div(style = "font-size: 80%", tableOutput("mobTable"))
         , width = 4)
       
     ), 
