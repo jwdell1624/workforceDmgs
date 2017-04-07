@@ -1,4 +1,4 @@
-function(input, output, session) {
+shinyServer(function(input, output, session) {
   
   # ERROR MESSAGES TO CLIENT -----------------------------------------------------------------------
   
@@ -236,25 +236,26 @@ function(input, output, session) {
   # Diversity summary
   divPrfl <- reactive({
     
-    test <- wddDataset2()
+    divGender <- wddDataset2()
     
-    test$Gender <- ifelse(test$Gender == "Female", "Yes", "No")
+    divGender$Gender <- ifelse(divGender$Gender == "Female", "Yes", "No")
     
-    test %>%
+    divGender %>%
       select(Gender, NESB_Sum, Disability_HC, Indigenous_HC) %>% 
       gather() %>% # convert to long format
       group_by(key, value) %>%
       summarise(n=n()) %>%
-      mutate(perc = paste0(round(n/sum(n) * 100, 1), "%")
+      mutate(perc = paste0(round(n / sum(n) * 100, 2), "%")
              , percCount = paste(perc, paste0("(", n, ")"))) %>%
       select(key, value, percCount) %>% 
-      spread(key, percCount) %>% 
-      rename('Y/N' = value
-             , Disablity = Disability_HC
-             , Female = Gender
-             , Indigenous = Indigenous_HC
-             , NESB = NESB_Sum) -> 
+      spread(value, percCount) %>% # convert back to short format
+      rename('Indicator' = key) -> 
     divPrfl
+    
+    divPrfl <- replace(divPrfl, (divPrfl == "Gender"), "Female")
+    divPrfl <- replace(divPrfl, (divPrfl == "NESB_Sum"), "NESB")
+    divPrfl <- replace(divPrfl, (divPrfl == "Disability_HC"), "Disability")
+    divPrfl <- replace(divPrfl, (divPrfl == "Indigenous_HC"), "Indigenous")
     
     replace(divPrfl, is.na(divPrfl), "0% (0)")
     
@@ -263,8 +264,17 @@ function(input, output, session) {
   # MDP plot data
   mdpPrfl <- reactive({
     
-    as.data.frame(table(wddDataset2()$MDP_Status))
-    
+    wddDataset2() %>% 
+      select(MDP_Status) %>% 
+      group_by(MDP_Status) %>% 
+      summarise(n = n()) %>% 
+      mutate(perc = paste0(round(n / sum(n) * 100, 2), "%")
+             , completion.numbers = paste(n, paste0("(", perc, ")"))) %>% 
+      select(MDP_Status, completion.numbers) %>% 
+      rename('MDP Status' = MDP_Status
+             , 'Completion Numbers' = completion.numbers) ->
+    mdpPrfl
+
   })
   
   # F2F, eLRN and External training data
@@ -279,7 +289,9 @@ function(input, output, session) {
                 , eLEARN = round(sum(eLRN_Count)/HC, 2)
                 , EXTERNAL = round(sum(External_Count)/HC, 2)) %>% 
       gather() %>% 
-      slice(2:4) ->
+      slice(2:4) %>% 
+      rename('Indicator' = key
+             , 'Events per HC' = value) ->
     ldPrfl
     
   })
@@ -319,14 +331,15 @@ function(input, output, session) {
       gather() %>% # convert to long format
       group_by(key, value) %>%
       summarise(n=n()) %>%
-      mutate(perc = paste0(round(n/sum(n) * 100, 1), "%")
+      mutate(perc = paste0(round(n/sum(n) * 100, 2), "%")
              , percCount = paste(perc, paste0("(", n, ")"))) %>%
       select(key, value, percCount) %>% 
-      spread(key, percCount) %>% 
-      rename('Y/N' = value
-             , 'Mobility Register' = Mobility_Indicator
-             , 'Order of Merit' = OOM_Indicator) -> 
+      spread(value, percCount) %>% # convert back to short format
+      rename('Indicator' = key) -> 
       mobPrfl
+    
+    mobPrfl <- replace(mobPrfl, (mobPrfl == "Mobility_Indicator"), "Mobility Register")
+    mobPrfl <- replace(mobPrfl, (mobPrfl == "OOM_Indicator"), "Order of Merit")
     
     replace(mobPrfl, is.na(mobPrfl), "0% (0)")
     
@@ -842,8 +855,8 @@ function(input, output, session) {
   
   #__________________________________________________________________________________________________#
   
-  # Learning and development plots ####
-  output$mdpPlot <- renderPlotly({
+  # Learning and development tables ####
+  output$mdpTbl <- renderTable({
     
     # Take a dependency on action button
     input$buildDashboard
@@ -853,26 +866,13 @@ function(input, output, session) {
       # error message to user where no data exists in selection
       data.msg()
       
-      # plot variables
-      m <- list(t = 25, b = 15)
-      
-      # plotly layout
-      p <- plot_ly(data = mdpPrfl()
-                   , labels = Var1
-                   , values = Freq
-                   , type = "pie") %>% 
-        layout(margin = m
-               , showlegend = F) %>% 
-        config(displayModeBar = F)
-      
-      # print plotly build
-      p
+      mdpPrfl()
       
     })
     
   })
   
-  output$ldPlot <- renderPlotly({
+  output$ldTbl <- renderTable({
     
     # Take a dependency on action button
     input$buildDashboard
@@ -882,23 +882,7 @@ function(input, output, session) {
       # error message to user where no data exists in selection
       data.msg()
       
-      # plot variables
-      m <- list(t = 25, b = 40, l = 80)  
-      
-      # plotly layout
-      p <- plot_ly(data = ldPrfl()
-                   , x = value
-                   , y = key
-                   , type = "bar"
-                   , orientation = "h") %>% 
-        layout(margin = m
-               , yaxis = list(title = "")
-               , xaxis = list(title = "Events per HC")
-               , showlegend = F) %>% 
-        config(displayModeBar = F)
-      
-      # print plotly build
-      p
+      ldPrfl()
       
     })
     
@@ -934,4 +918,4 @@ function(input, output, session) {
     
   })
   
-}
+})

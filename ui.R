@@ -1,19 +1,29 @@
-function(request) {
+shinyUI(function(request) {
+  
   # define plot height variable
   plot.height <- 250
   
-  # Create dashboard header
-  header <- dashboardHeader(
+  fluidPage(
     
-    dropdownMenu(type = "notifications"
-                 , notificationItem(text = read.table(paste0(dataPath, "workforceDmgs/dateComment.txt"))
-                                    , icon("exclamation-circle"))), 
-    title = "Workforce Demographics",
-    titleWidth = 300
-  )
+  # CSS style for validation message
+  tags$head(tags$style(HTML(".shiny-output-error-validation {color: red;}"))),
   
-  # Widgets for dahsboard sidebar
-  sidebar <- dashboardSidebar(
+  # CSS style for navbar html
+  # tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "bootstrap.min.css")),
+  
+  # Navbar HTML
+  includeHTML("www/navbar.html"),
+  
+  # br(),
+  # br(), # Breaks to create space between navbar and titlepanel
+  
+  div(style = "padding-top: 50px", titlePanel("Workforce Demographics"
+                                              , windowTitle = "Workforce Demographics")
+  ),
+  
+  sidebarLayout(
+    
+    sidebarPanel(width = 3, 
     
     selectInput(inputId    = "wddSelEmpTyp"
                 , label    = "Choose employment filter:"
@@ -126,102 +136,84 @@ function(request) {
                     , label = "Choose Indigenous Indicator:"
                     , choices = sort(unique(df$Indigenous_HC)))),
     
+    actionButton("buildDashboard", label = "Refresh Dashboard", class = "btn-primary"),
+    
     br(),
-    div(style="padding-left: 12px", actionButton("buildDashboard", label = "Refresh Dashboard", class = "btn-primary")),
     br(),
-    div(style="padding-left: 12px", bookmarkButton(class = "btn-primary", label = "Bookmark")),
+    
+    bookmarkButton(class = "btn-primary", label = "Bookmark"),
+    
     br(),
-    p(style="padding-left: 12px; padding-right: 12px", "This application's data excludes Statutory Office Holders ie. Commissioners."),
-    p(style="padding-left: 12px; padding-right: 12px", "For privacy purposes SES3 data has been aggregated into the SES2 classification.")
-  )
+    br(),
+    
+    p("This application's data excludes Statutory Office Holders ie. Commissioners."),
+    
+    p("For privacy purposes SES3 data has been aggregated into the SES2 classification.")
+  ),
   
   # Build dashboard layout
-  body <- dashboardBody(
+  mainPanel(
     
-    # style messages provided to the user
-    tags$head(
-      tags$style(
-        HTML(".shiny-output-error-validation {color: red;}"))),
-    
-    tags$head(
-      tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
+    fluidRow(
+
+      column(width = 6
+        , h4(strong("Age and Tenure"))
+        , tabsetPanel(id = "ageTnrTab"
+                      , tabPanel("Age by Tnr", plotlyOutput("ageTnrPlot", height = plot.height))
+                      , tabPanel("ATO Tnr",    plotlyOutput("atoPlot", height = plot.height))
+                      , tabPanel("Age",        plotlyOutput("agePlot", height = plot.height))
+                      , selected = "Age")
+        ),
+
+      column(width = 6
+        , h4(strong("Workforce"))
+        , tabsetPanel(id = "functionsTab"
+                      , tabPanel("Classification", plotlyOutput("classnPlot", height = plot.height))
+                      , tabPanel(uiOutput("jfGrpTitle")
+                                 , plotlyOutput("jfPlot", height = plot.height))
+                      , selected = "Classification")
+        )
     ),
     
+    br(),
+
     fluidRow(
-      
-      tabBox(
-        "ageTnrTab"
-        , title = "Age and Tenure"
-        , side = "right"
-        , tabPanel("Age by Tnr", plotlyOutput("ageTnrPlot", height = plot.height))
-        , tabPanel("ATO Tnr",    plotlyOutput("atoPlot", height = plot.height))
-        , tabPanel("Age",        plotlyOutput("agePlot", height = plot.height))
-        , selected = "Age"),
-      
-      box(
-        title = "Classification"
-        , solidHeader = TRUE
-        , collapsible = TRUE
-        , status = "info"
-        , plotlyOutput("classnPlot", height = plot.height))
-      
-    ), 
+
+      column(width = 6
+        , h4(strong("Diversity"))
+        , br(),
+        # , div(style = "font-size: 70%; padding-top: 70px", 
+              tableOutput("divTable")
+        ),
     
+      column(width = 6
+        , h4(strong("Mobility"))
+        , br()
+        , tableOutput("mobTable")
+        )
+
+    ),
+
     fluidRow(
+
+      column(width = 6
+             , h4(strong("Learning & Development"))
+             , br()
+             , tabsetPanel(id = "learningTab"
+                           , tabPanel("External Cost", br(), tableOutput("costTbl"))
+                           , tabPanel("Events Rate", br(), tableOutput("ldTbl"))
+                           , tabPanel("MDP", br(), tableOutput("mdpTbl"))
+                           , selected = "MDP")
+        ),
       
-      box( 
-        id = "diversityBox"
-        , style = "padding-left: 0px; padding-top: 50px; padding-bottom: 48.5px"
-        , title = "Diversity"
-        , side = "right"
-        , div(style = "font-size: 80%", tableOutput("divTable"))
-        , width = 4),
-      
-      tabBox(
-        "learningTab"
-        , title = "Learning & Development"
-        , side = "right"
-        , tabPanel("External Cost", tableOutput("costTbl"))
-        , tabPanel("Events Rate", plotlyOutput("ldPlot", height = plot.height + 8))
-        , tabPanel("MDP", plotlyOutput("mdpPlot", height = plot.height + 8))
-        , selected = "MDP"
-        , width = 4),
-      
-      box(
-        id = "mobilityTab"
-        , style = "padding-top: 50px; padding-bottom: 80.5px"
-        , title = "Mobility"
-        , side = "right"
-        , div(style = "font-size: 80%", tableOutput("mobTable"))
-        , width = 4)
-      
-    ), 
-    
-    fluidRow(
-      
-      tabBox(
-        "functionsTab"
-        , title = "Workforce"
-        , side = "right"
-        , tabPanel(uiOutput("jfGrpTitle"), plotlyOutput("jfPlot", height = plot.height))
-        # , tabPanel("Function", plotlyOutput("funcPlot", height = plot.height))
-        # , tabPanel("Comms Persona", plotlyOutput("commsPlot", height = plot.height))
-        , selected = uiOutput("jfGrpTitle")),
-      
-      box(
-        title = uiOutput("locnGrpTitle")
-        , solidHeader = TRUE
-        , collapsible = TRUE
-        , status = "danger"
-        , plotlyOutput("locnPlot", height = plot.height))
-      
+      column(width = 6
+        , h4(strong("Position Location"))
+        , br()
+        , plotlyOutput("locnPlot", height = plot.height)
+        )
     )
     
+      )
+    )
   )
-  
-  # Render dashboard
-  dashboardPage(header
-                , sidebar
-                , body
-                , skin = "purple")
-}
+})

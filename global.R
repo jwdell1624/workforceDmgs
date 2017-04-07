@@ -1,6 +1,6 @@
 # TODO wrap suppress messages, test suppressPackageStartupMessages() 
 # TODO add brief comment next to each library loaded
-suppressMessages(library(shinydashboard))
+suppressMessages(library(shiny))
 suppressMessages(library(readr))
 suppressMessages(library(plotly))       # interactive ploting
 suppressMessages(library(ggplot2))
