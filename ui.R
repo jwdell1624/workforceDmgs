@@ -17,9 +17,7 @@ shinyUI(function(request) {
   # br(),
   # br(), # Breaks to create space between navbar and titlepanel
   
-  div(style = "padding-top: 50px", titlePanel("Workforce Demographics"
-                                              , windowTitle = "Workforce Demographics")
-  ),
+  div(style = "padding-top: 50px", titlePanel("Workforce Demographics")),
   
   sidebarLayout(
     
@@ -184,6 +182,8 @@ shinyUI(function(request) {
         , br(),
         # , div(style = "font-size: 70%; padding-top: 70px", 
               tableOutput("divTable")
+        , em(p(style = "font-size:13px", "Note: for privacy purposes, a '*' in the table indicates a 
+               metric that does not display due to selected population being < 100"))
         ),
     
       column(width = 6
