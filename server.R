@@ -1,6 +1,8 @@
 shinyServer(function(input, output, session) {
   
   # ERROR MESSAGES TO CLIENT -----------------------------------------------------------------------
+
+  # TODO Do we still need both msgs?
   
   # Error message to user where no data exists in selection
   data.msg <- reactive({
@@ -398,7 +400,7 @@ shinyServer(function(input, output, session) {
       # plot variables
       x <- list(title = "")
       y <- list(title = input$wddSelView)
-      m <- list(t = 10, r = 30)
+      m <- list(t = 10, r = 30, b = 50)
       
       if (input$wddSelView == "Headcount"){
         
@@ -454,7 +456,7 @@ shinyServer(function(input, output, session) {
                      , "45 - 49", "50 - 54", "55 - 59", "60 - 64", "65 - 69", ">= 70")
       x <- list(title = "", categoryorder = "array", categoryarray = x.order)
       y <- list(title = input$wddSelView)
-      m <- list(t = 10, r = 30)
+      m <- list(t = 10, r = 30, b = 50)
       
       if (input$wddSelView == "Headcount"){
         
@@ -568,7 +570,7 @@ shinyServer(function(input, output, session) {
       # plot variables
       x <- list(title = "")
       y <- list(title = input$wddSelView)
-      m <- list(t = 10, r = 30)
+      m <- list(t = 10, r = 30, b = 50)
       
       if (input$wddSelView == "Headcount"){
         

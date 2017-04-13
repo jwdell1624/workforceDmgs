@@ -8,15 +8,10 @@ shinyUI(function(request) {
   # CSS style for validation message
   tags$head(tags$style(HTML(".shiny-output-error-validation {color: red;}"))),
   
-  # CSS style for navbar html
-  # tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "bootstrap.min.css")),
-  
   # Navbar HTML
   includeHTML("www/navbar.html"),
   
-  # br(),
-  # br(), # Breaks to create space between navbar and titlepanel
-  
+  # Navbar padding
   div(style = "padding-top: 50px", titlePanel("Workforce Demographics")),
   
   sidebarLayout(
@@ -139,7 +134,7 @@ shinyUI(function(request) {
     br(),
     br(),
     
-    bookmarkButton(class = "btn-primary", label = "Bookmark"),
+    bookmarkButton(label = "Bookmark"),
     
     br(),
     br(),
@@ -182,7 +177,7 @@ shinyUI(function(request) {
         , br(),
         # , div(style = "font-size: 70%; padding-top: 70px", 
               tableOutput("divTable")
-        , em(p(style = "font-size:13px", "Note: for privacy purposes, a '*' in the table indicates a 
+        , em(p(style = "font-size:12px", "Note: for privacy purposes, a '*' in the table indicates a 
                metric that does not display due to selected population being < 100"))
         ),
     
@@ -207,7 +202,7 @@ shinyUI(function(request) {
         ),
       
       column(width = 6
-        , h4(strong("Position Location"))
+        , h4(strong(uiOutput("locnGrpTitle")))
         , br()
         , plotlyOutput("locnPlot", height = plot.height)
         )
