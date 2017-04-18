@@ -130,17 +130,17 @@ shinyUI(function(request) {
                     , choices = sort(unique(df$Indigenous_HC)))),
     
     actionButton("buildDashboard", label = "Refresh Dashboard", class = "btn-primary"),
-    
     br(),
     br(),
     
     bookmarkButton(label = "Bookmark"),
-    
     br(),
+    br(),
+    
+    uiOutput(outputId = "dt"),
     br(),
     
     p("This application's data excludes Statutory Office Holders ie. Commissioners."),
-    
     p("For privacy purposes SES3 data has been aggregated into the SES2 classification.")
   ),
   
@@ -160,7 +160,7 @@ shinyUI(function(request) {
 
       column(width = 6
         , h4(strong("Workforce"))
-        , tabsetPanel(id = "functionsTab"
+        , tabsetPanel(id = "hierarchyTab"
                       , tabPanel("Classification", plotlyOutput("classnPlot", height = plot.height))
                       , tabPanel(uiOutput("jfGrpTitle")
                                  , plotlyOutput("jfPlot", height = plot.height))

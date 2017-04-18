@@ -24,6 +24,13 @@ shinyServer(function(input, output, session) {
   # TODO - remove WAdashboard naming conventions e.g. from "wddSelOrg" to "selOrg", "wddDataset" etc.
   # TODO - remove explicit printing of 'ttl' see wiki for a code example
   # Dynamic UI for Location/Group plot
+  output$dt <- renderUI({
+    
+    snpsht_dt <- format(max(df$Snapshot_Date), "%d.%m.%Y")
+    paste0("Data is as at ", snpsht_dt)
+    
+  })
+  
   output$locnGrpTitle <- renderUI({
     
     # Take a dependency on action button
@@ -709,70 +716,6 @@ shinyServer(function(input, output, session) {
     
   })
   
-  output$commsPlot <- renderPlotly({
-    
-    # Take a dependency on action button
-    input$buildDashboard
-    
-    isolate({
-      
-      # error message to user where no data exists in selection
-      data.msg()
-      
-      # error message to user where less than 100 records 
-      prvcy.msg()
-      
-      # plot variables
-      m <- list(t = 25, b = 15)
-      
-      # plotly layout
-      p <- plot_ly(data = wddCommsPrfl()
-                   , labels = Var1
-                   , values = Freq
-                   , type = "pie") %>% 
-        layout(margin = m
-               , showlegend = F) %>% 
-        config(displayModeBar = F)
-      
-      # print plotly build
-      p
-      
-    })
-    
-  })
-  
-  output$funcPlot <- renderPlotly({
-    
-    # Take a dependency on action button
-    input$buildDashboard
-    
-    isolate({
-      
-      # error message to user where no data exists in selection
-      data.msg()
-      
-      # error message to user where less than 100 records 
-      prvcy.msg()
-      
-      # plot variables
-      m <- list(t = 25, b = 15)
-      
-      # plotly layout
-      p <- plot_ly(data = wddFuncPrfl()
-                   , labels = Var1
-                   , values = Freq
-                   , type = "pie") %>% 
-        layout(margin = m
-               , showlegend = F) %>% 
-        config(displayModeBar = F)
-      
-      # print plotly build
-      p
-      
-    })
-    
-  })
-  
   #__________________________________________________________________________________________________#
   
   # Position Location profile plot
@@ -884,6 +827,9 @@ shinyServer(function(input, output, session) {
     
     isolate({
       
+      # error message to user where no data exists in selection
+      data.msg()
+      
       divPrfl()
       
     })
@@ -933,6 +879,9 @@ shinyServer(function(input, output, session) {
     
     isolate({
       
+      # error message to user where no data exists in selection
+      data.msg()
+      
       costPrfl()
       
     })
@@ -948,6 +897,9 @@ shinyServer(function(input, output, session) {
     input$buildDashboard
     
     isolate({
+      
+      # error message to user where no data exists in selection
+      data.msg()
       
       mobPrfl()
       
