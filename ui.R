@@ -5,6 +5,8 @@ shinyUI(function(request) {
   
   fluidPage(
     
+  useShinyjs(),
+    
   # CSS style for validation message
   tags$head(tags$style(HTML(".shiny-output-error-validation {color: red;}"))),
   
@@ -159,11 +161,10 @@ shinyUI(function(request) {
         ),
 
       column(width = 6
-        , h4(strong("Workforce"))
-        , tabsetPanel(id = "hierarchyTab"
+        , h4(strong("Classification and Capability"))
+        , tabsetPanel(id = "clsnCpbltyTab"
                       , tabPanel("Classification", plotlyOutput("classnPlot", height = plot.height))
-                      , tabPanel(uiOutput("jfGrpTitle")
-                                 , plotlyOutput("jfPlot", height = plot.height))
+                      , tabPanel("Job Family", plotlyOutput("jfPlot", height = plot.height))
                       , selected = "Classification")
         )
     ),
