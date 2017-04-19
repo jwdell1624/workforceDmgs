@@ -276,7 +276,7 @@ shinyServer(function(input, output, session) {
              , percCount = ifelse(perc == "*", "*", paste(perc, paste0("(", n, ")")))) %>%
       select(key, value, percCount) %>%
       spread(value, percCount) %>% # convert back to short format
-      rename('Indicator' = key) ->
+      select('Indicator' = key, Yes, No) ->
     divPrfl
     
     divPrfl <- replace(divPrfl, (divPrfl == "Gender"), "Female")
@@ -393,8 +393,8 @@ shinyServer(function(input, output, session) {
              , percCount = paste(perc, paste0("(", n, ")"))) %>%
       select(key, value, percCount) %>% 
       spread(value, percCount) %>% # convert back to short format
-      rename('Indicator' = key) -> 
-      mobPrfl
+      select('Indicator' = key, Yes, No) -> 
+    mobPrfl
     
     mobPrfl <- replace(mobPrfl, (mobPrfl == "Mobility_Indicator"), "Mobility Register")
     mobPrfl <- replace(mobPrfl, (mobPrfl == "OOM_Indicator"), "Order of Merit")

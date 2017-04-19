@@ -156,9 +156,9 @@ shinyUI(function(request) {
       column(width = 6
         , h4(strong("Age and Tenure"))
         , tabsetPanel(id = "ageTnrTab"
-                      , tabPanel("Age by Tnr", plotlyOutput("ageTnrPlot", height = plot.height))
-                      , tabPanel("ATO Tnr",    plotlyOutput("atoPlot", height = plot.height))
                       , tabPanel("Age",        plotlyOutput("agePlot", height = plot.height))
+                      , tabPanel("ATO Tnr",    plotlyOutput("atoPlot", height = plot.height))
+                      , tabPanel("Age by Tnr", plotlyOutput("ageTnrPlot", height = plot.height))
                       , selected = "Age")
         ),
 
@@ -177,16 +177,14 @@ shinyUI(function(request) {
 
       column(width = 6
         , h4(strong("Diversity"))
-        , br(),
         # , div(style = "font-size: 70%; padding-top: 70px", 
-              tableOutput("divTable")
+        , tableOutput("divTable")
         , em(p(style = "font-size:12px", "Note: for privacy purposes, a '*' in the table indicates a 
                metric that does not display due to selected population being < 100"))
         ),
     
       column(width = 6
         , h4(strong("Mobility"))
-        , br()
         , tableOutput("mobTable")
         )
 
@@ -196,17 +194,16 @@ shinyUI(function(request) {
 
       column(width = 6
              , h4(strong("Learning & Development"))
-             , br()
              , tabsetPanel(id = "learningTab"
-                           , tabPanel("External Cost", br(), tableOutput("costTbl"))
-                           , tabPanel("Events Rate", br(), tableOutput("ldTbl"))
                            , tabPanel("MDP", br(), tableOutput("mdpTbl"))
+                           , tabPanel("Events Rate", br(), tableOutput("ldTbl"))
+                           , tabPanel("External Cost", br(), tableOutput("costTbl"))
                            , selected = "MDP")
         ),
       
       column(width = 6
         , h4(strong(uiOutput("locnGrpTitle")))
-        , br()
+  
         , plotlyOutput("locnPlot", height = plot.height)
         )
     )
