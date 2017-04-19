@@ -6,6 +6,7 @@ suppressMessages(library(plotly))       # interactive ploting
 suppressMessages(library(ggplot2))
 suppressMessages(library(dplyr))        # data wrangling
 suppressMessages(library(tidyr))
+suppressMessages(library(shinyjs))
 
 # Enable Bookmarking
 enableBookmarking(store = "url")

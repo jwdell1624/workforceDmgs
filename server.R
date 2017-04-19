@@ -7,7 +7,14 @@ shinyServer(function(input, output, session) {
   # Error message to user where no data exists in selection
   data.msg <- reactive({
     
-    validate(need(nrow(wddDataset2()) != 0, "Your current selection does not have any employees"))
+    validate(need(nrow(wddDataset2()) != 0, ""))
+    
+  })
+  
+  # Error message to user where no data exists in selection
+  data.msg2 <- reactive({
+    
+    validate(need(nrow(wddDataset2()) != 0, "Your selection does not contain any employees"))
     
   })
   
@@ -24,6 +31,13 @@ shinyServer(function(input, output, session) {
   # TODO - remove WAdashboard naming conventions e.g. from "wddSelOrg" to "selOrg", "wddDataset" etc.
   # TODO - remove explicit printing of 'ttl' see wiki for a code example
   # Dynamic UI for Location/Group plot
+  output$msg <- renderUI({
+    
+    data.msg2()
+    
+  })
+  
+  
   output$dt <- renderUI({
     
     snpsht_dt <- format(max(df$Snapshot_Date), "%d.%m.%Y")
@@ -904,6 +918,15 @@ shinyServer(function(input, output, session) {
       mobPrfl()
       
     })
+    
+  })
+  
+  # Shinyjs toggle to hide download button when selection has no employees
+  observe({
+    
+    toggle(id = "ageTnrTab",   condition = (nrow(wddDataset2()) != 0))
+    toggle(id = "clsnJobTab",  condition = (nrow(wddDataset2()) != 0))
+    toggle(id = "learningTab", condition = (nrow(wddDataset2()) != 0))
     
   })
   

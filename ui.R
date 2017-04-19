@@ -149,6 +149,8 @@ shinyUI(function(request) {
   # Build dashboard layout
   mainPanel(
     
+    uiOutput("msg"),
+    
     fluidRow(
 
       column(width = 6
@@ -161,8 +163,8 @@ shinyUI(function(request) {
         ),
 
       column(width = 6
-        , h4(strong("Classification and Capability"))
-        , tabsetPanel(id = "clsnCpbltyTab"
+        , h4(strong("Classification and Job Family"))
+        , tabsetPanel(id = "clsnJobTab"
                       , tabPanel("Classification", plotlyOutput("classnPlot", height = plot.height))
                       , tabPanel("Job Family", plotlyOutput("jfPlot", height = plot.height))
                       , selected = "Classification")
