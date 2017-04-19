@@ -135,9 +135,10 @@ shinyUI(function(request) {
     br(),
     br(),
     
-    bookmarkButton(label = "Bookmark"),
-    br(),
-    br(),
+    conditionalPanel(condition = "input.buildDashboard > 0",
+      bookmarkButton(label = "Bookmark"),
+      br(),
+      br()),
     
     uiOutput(outputId = "dt"),
     br(),
