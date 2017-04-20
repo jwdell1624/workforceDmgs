@@ -1,31 +1,5 @@
 shinyServer(function(input, output, session) {
   
-  # ERROR MESSAGES TO CLIENT -----------------------------------------------------------------------
-
-  # TODO Do we still need both msgs?
-  
-  # Error message to user where no data exists in selection
-  data.msg <- reactive({
-    
-    validate(need(nrow(wddDataset2()) != 0, ""))
-    
-  })
-  
-  # Error message to user where no data exists in selection
-  data.msg2 <- reactive({
-    
-    validate(need(nrow(wddDataset2()) != 0, "Your selection does not contain any employees"))
-    
-  })
-  
-  # Error message to user where less than 100 records 
-  prvcy.msg <- reactive({
-    
-    validate(need(nrow(wddDataset2()) >= 100
-                  , "For privacy purposes, this metric only displays for populations of 100+"))
-    
-  })
-  
   # DYNAMIC UI -------------------------------------------------------------------------------------
   
   # TODO - remove WAdashboard naming conventions e.g. from "wddSelOrg" to "selOrg", "wddDataset" etc.
@@ -259,30 +233,23 @@ shinyServer(function(input, output, session) {
   # Diversity summary
   divPrfl <- reactive({
     
-    divDataset <- wddDataset2()
-
-    divDataset$Gender <- ifelse(divDataset$Gender == "Female", "Yes", "No")
-    
-    divDataset %>%
-      select(Gender, NESB_Sum, Disability_HC, Indigenous_HC) %>%
+    wddDataset2() %>%
+      select(Female       = Gender
+             , NESB       = NESB_Sum
+             , Disability = Disability_HC
+             , Indigenous = Indigenous_HC) %>%
+      mutate(Female = ifelse(Female == "Female", "Yes", "No")) %>% 
       gather() %>% # convert to long format
       group_by(key, value) %>%
-      summarise(n=n()) %>%
-      mutate(perc = ifelse(key == "Indigenous_HC" & sum(n) < 100
-                           , "*"
-                           , ifelse(key == "Disability_HC" & sum(n) <100
-                                    , "*"
-                                    , paste0(round(n / sum(n) * 100, 2), "%")))
+      summarise(n = n()) %>%
+      mutate(perc = ifelse(key == "Indigenous_HC" & sum(n) < 100, "*"
+                           , ifelse(key == "Disability_HC" & sum(n) <100, "*"
+                           , paste0(round(n / sum(n) * 100, 2), "%")))
              , percCount = ifelse(perc == "*", "*", paste(perc, paste0("(", n, ")")))) %>%
       select(key, value, percCount) %>%
       spread(value, percCount) %>% # convert back to short format
-      select('Indicator' = key, Yes, No) ->
+      rename('Indicator' = key) ->
     divPrfl
-    
-    divPrfl <- replace(divPrfl, (divPrfl == "Gender"), "Female")
-    divPrfl <- replace(divPrfl, (divPrfl == "NESB_Sum"), "NESB")
-    divPrfl <- replace(divPrfl, (divPrfl == "Disability_HC"), "Disability")
-    divPrfl <- replace(divPrfl, (divPrfl == "Indigenous_HC"), "Indigenous")
 
     # Below 2 replace functions replace NAs in table for Female and NESB metrics with "0% (0)"
     
@@ -385,7 +352,8 @@ shinyServer(function(input, output, session) {
   mobPrfl <- reactive({
     
     wddDataset2() %>%
-      select(Mobility_Indicator, OOM_Indicator) %>% 
+      select(`Mobility Register` = Mobility_Indicator
+             , `Order of Merit`  = OOM_Indicator) %>% 
       gather() %>% # convert to long format
       group_by(key, value) %>%
       summarise(n=n()) %>%
@@ -393,13 +361,11 @@ shinyServer(function(input, output, session) {
              , percCount = paste(perc, paste0("(", n, ")"))) %>%
       select(key, value, percCount) %>% 
       spread(value, percCount) %>% # convert back to short format
-      select('Indicator' = key, Yes, No) -> 
+      rename('Indicator' = key) %>% 
+      replace(is.na(.), "0% (0)") ->
     mobPrfl
     
-    mobPrfl <- replace(mobPrfl, (mobPrfl == "Mobility_Indicator"), "Mobility Register")
-    mobPrfl <- replace(mobPrfl, (mobPrfl == "OOM_Indicator"), "Order of Merit")
-    
-    replace(mobPrfl, is.na(mobPrfl), "0% (0)")
+    # replace(mobPrfl, is.na(mobPrfl), "0% (0)")
     
   })
   
@@ -414,9 +380,6 @@ shinyServer(function(input, output, session) {
     input$buildDashboard
     
     isolate({
-      
-      # error message to user where no data exists in selection
-      data.msg()
       
       # plot variables
       x <- list(title = "")
@@ -468,10 +431,7 @@ shinyServer(function(input, output, session) {
     input$buildDashboard
     
     isolate({
-      
-      # error message to user where no data exists in selection
-      data.msg()
-      
+ 
       # plot variables
       x.order = list("< 20","20 - 24","25 - 29","30 - 34","35 - 39", "40 - 44"
                      , "45 - 49", "50 - 54", "55 - 59", "60 - 64", "65 - 69", ">= 70")
@@ -530,10 +490,7 @@ shinyServer(function(input, output, session) {
     input$buildDashboard
     
     isolate({
-      
-      # error message to user where no data exists in selection
-      data.msg()
-      
+  
       # plot variables
       x <- list(title = "")
       y <- list(title = input$wddSelView)
@@ -584,10 +541,7 @@ shinyServer(function(input, output, session) {
     input$buildDashboard
     
     isolate({
-      
-      # error message to user where no data exists in selection
-      data.msg()
-      
+ 
       # plot variables
       x <- list(title = "")
       y <- list(title = input$wddSelView)
@@ -638,9 +592,6 @@ shinyServer(function(input, output, session) {
     input$buildDashboard
     
     isolate({
-      
-      # error message to user where no data exists in selection
-      data.msg()
       
       # plot variables
       x <- list(title = "")
@@ -740,9 +691,6 @@ shinyServer(function(input, output, session) {
     
     isolate({
       
-      # error message to user where no data exists in selection
-      data.msg()
-      
       # plot variables
       x <- list(title = "")
       y <- list(title = input$wddSelView)
@@ -841,9 +789,6 @@ shinyServer(function(input, output, session) {
     
     isolate({
       
-      # error message to user where no data exists in selection
-      data.msg()
-      
       divPrfl()
       
     })
@@ -859,10 +804,7 @@ shinyServer(function(input, output, session) {
     input$buildDashboard
     
     isolate({
-      
-      # error message to user where no data exists in selection
-      data.msg()
-      
+ 
       mdpPrfl()
       
     })
@@ -875,10 +817,7 @@ shinyServer(function(input, output, session) {
     input$buildDashboard
     
     isolate({
-      
-      # error message to user where no data exists in selection
-      data.msg()
-      
+
       ldPrfl()
       
     })
@@ -892,10 +831,7 @@ shinyServer(function(input, output, session) {
     input$buildDashboard
     
     isolate({
-      
-      # error message to user where no data exists in selection
-      data.msg()
-      
+
       costPrfl()
       
     })
@@ -911,10 +847,7 @@ shinyServer(function(input, output, session) {
     input$buildDashboard
     
     isolate({
-      
-      # error message to user where no data exists in selection
-      data.msg()
-      
+
       mobPrfl()
       
     })
