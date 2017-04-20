@@ -848,7 +848,7 @@ shinyServer(function(input, output, session) {
       
     })
     
-  })
+  }, align = 'c')
   
   #__________________________________________________________________________________________________#
   
@@ -867,7 +867,7 @@ shinyServer(function(input, output, session) {
       
     })
     
-  })
+  }, align = 'c')
   
   output$ldTbl <- renderTable({
     
@@ -883,7 +883,7 @@ shinyServer(function(input, output, session) {
       
     })
     
-  })
+  }, align = 'c')
   
   # External training cost plot
   output$costTbl <- renderTable({
@@ -900,7 +900,7 @@ shinyServer(function(input, output, session) {
       
     })
     
-  })
+  }, align = 'c')
   
   #__________________________________________________________________________________________________#
   
@@ -919,15 +919,13 @@ shinyServer(function(input, output, session) {
       
     })
     
-  })
+  }, align = 'c')
   
-  # Shinyjs toggle to hide download button when selection has no employees
-  observe({
-    
-    toggle(id = "ageTnrTab",   condition = (nrow(wddDataset2()) != 0))
-    toggle(id = "clsnJobTab",  condition = (nrow(wddDataset2()) != 0))
-    toggle(id = "learningTab", condition = (nrow(wddDataset2()) != 0))
-    
+  #________________________________________________________________________________________________#
+  
+  output$mnPnl <- reactive({
+    nrow(wddDataset2())
   })
+  outputOptions(output, 'mnPnl', suspendWhenHidden = FALSE)
   
 })
