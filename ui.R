@@ -160,7 +160,7 @@ shinyUI(function(request) {
                             , selected = "Age")),
 
           column(width = 6
-                 , h4(strong("Classification and Job Family"))
+                 , h4(strong(uiOutput("classnTitle")))
                  , tabsetPanel(id = "clsnJobTab"
                                , tabPanel(title = "Classification"
                                           , plotlyOutput(outputId = "classnPlot"

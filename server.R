@@ -5,13 +5,6 @@ shinyServer(function(input, output, session) {
   # TODO - remove WAdashboard naming conventions e.g. from "wddSelOrg" to "selOrg", "wddDataset" etc.
   # TODO - remove explicit printing of 'ttl' see wiki for a code example
   # Dynamic UI for Location/Group plot
-  output$msg <- renderUI({
-    
-    data.msg2()
-    
-  })
-  
-  
   output$dt <- renderUI({
     
     snpsht_dt <- format(max(df$Snapshot_Date), "%d.%m.%Y")
@@ -50,6 +43,26 @@ shinyServer(function(input, output, session) {
         ttl <- "Job Family" 
       } else { 
         ttl <- "Group by BSL"
+      }
+      # print object
+      ttl
+      
+    })
+    
+  })
+  
+  # dynamic ui for Classification plot heading
+  output$classnTitle <- renderUI({
+    
+    # Take a dependency on action button
+    input$buildDashboard
+    
+    isolate({
+      
+      if (input$wddSelOrg == "Job Family"){
+        ttl <- "Classification and Group by BSL" 
+      } else { 
+        ttl <- "Classification and Job Family"
       }
       # print object
       ttl
