@@ -5,9 +5,12 @@ shinyUI(function(request) {
   
   fluidPage(
     
-    # CSS style for validation message
-    tags$head(tags$style(HTML(".shiny-output-error-validation {color: red;}"))),
-  
+    # CSS to temporarily suppress 'argument is not a character vector' 
+    # error in diversity and mobility tables
+    tags$style(type="text/css",
+               ".shiny-output-error { visibility: hidden; }",
+               ".shiny-output-error:before { visibility: hidden; }"),
+    
     # Navbar HTML
     includeHTML("www/navbar.html"),
   
