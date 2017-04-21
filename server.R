@@ -395,8 +395,7 @@ shinyServer(function(input, output, session) {
                      , type = "bar") %>% 
           layout(xaxis = x
                  , yaxis = y
-                 , margin = m) %>% 
-          config(displayModeBar = F)
+                 , margin = m) 
         
         # print plotly build
         p
@@ -410,8 +409,7 @@ shinyServer(function(input, output, session) {
                      , type = "bar") %>% 
           layout(xaxis = x
                  , yaxis = y
-                 , margin = m) %>% 
-          config(displayModeBar = F)
+                 , margin = m)
         
         # print plotly build
         p
@@ -451,8 +449,7 @@ shinyServer(function(input, output, session) {
                  , xaxis = x
                  , yaxis = y
                  , margin = m
-                 , showlegend = F) %>% 
-          config(displayModeBar = F)
+                 , showlegend = F) 
         
         # print plotly build
         p
@@ -469,8 +466,7 @@ shinyServer(function(input, output, session) {
                  , xaxis = x
                  , yaxis = y
                  , margin = m
-                 , showlegend = F) %>% 
-          config(displayModeBar = F)
+                 , showlegend = F) 
         
         # print plotly build
         p
@@ -505,8 +501,7 @@ shinyServer(function(input, output, session) {
                      , type = "bar") %>% 
           layout(xaxis = x
                  , yaxis = y
-                 , margin = m) %>% 
-          config(displayModeBar = F)
+                 , margin = m) 
         
         # print plotly build
         p
@@ -520,8 +515,7 @@ shinyServer(function(input, output, session) {
                      , type = "bar") %>% 
           layout(xaxis = x
                  , yaxis = y
-                 , margin = m) %>% 
-          config(displayModeBar = F)
+                 , margin = m)
         
         # print plotly build
         p
@@ -556,8 +550,7 @@ shinyServer(function(input, output, session) {
                      , type = "bar") %>% 
           layout(xaxis = x
                  , yaxis = y
-                 , margin = m) %>% 
-          config(displayModeBar = F)
+                 , margin = m) 
         
         # print plotly build
         p
@@ -571,8 +564,7 @@ shinyServer(function(input, output, session) {
                      , type = "bar") %>% 
           layout(xaxis = x
                  , yaxis = y
-                 , margin = m) %>% 
-          config(displayModeBar = F)
+                 , margin = m)
         
         # print plotly build
         p
@@ -609,8 +601,7 @@ shinyServer(function(input, output, session) {
                      , type = "bar") %>% 
           layout(xaxis = x
                  , yaxis = y
-                 , margin = m) %>% 
-          config(displayModeBar = F)
+                 , margin = m) 
         
         # print plotly build
         p
@@ -627,8 +618,7 @@ shinyServer(function(input, output, session) {
                      , type = "bar") %>% 
           layout(xaxis = x
                  , yaxis = y
-                 , margin = m) %>% 
-          config(displayModeBar = F)
+                 , margin = m)
         
         # print plotly build
         p
@@ -648,8 +638,7 @@ shinyServer(function(input, output, session) {
                  , xaxis = x
                  , yaxis = y
                  , margin = m
-                 , showlegend = F) %>% 
-          config(displayModeBar = F)
+                 , showlegend = F) 
         
         # print plotly build
         p
@@ -669,8 +658,7 @@ shinyServer(function(input, output, session) {
                  , xaxis = x
                  , yaxis = y
                  , margin = m
-                 , showlegend = F) %>% 
-          config(displayModeBar = F)
+                 , showlegend = F) 
         
         # print plotly build
         p
@@ -707,8 +695,7 @@ shinyServer(function(input, output, session) {
                      , type = "bar") %>% 
           layout(xaxis = x
                  , yaxis = y
-                 , margin = m) %>% 
-          config(displayModeBar = F)
+                 , margin = m) 
         
         # print plotly build
         p
@@ -725,8 +712,7 @@ shinyServer(function(input, output, session) {
                      , type = "bar") %>% 
           layout(xaxis = x
                  , yaxis = y
-                 , margin = m) %>% 
-          config(displayModeBar = F)
+                 , margin = m)
         
         # print plotly build
         p
@@ -746,8 +732,7 @@ shinyServer(function(input, output, session) {
                  , xaxis = x
                  , yaxis = y
                  , margin = m
-                 , showlegend = F) %>% 
-          config(displayModeBar = F)
+                 , showlegend = F) 
         
         # print plotly build
         p
@@ -767,8 +752,7 @@ shinyServer(function(input, output, session) {
                  , xaxis = x
                  , yaxis = y
                  , margin = m
-                 , showlegend = F) %>% 
-          config(displayModeBar = F)
+                 , showlegend = F) 
         
         # print plotly build
         p
