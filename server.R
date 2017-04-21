@@ -246,29 +246,36 @@ shinyServer(function(input, output, session) {
   # Diversity summary
   divPrfl <- reactive({
     
-    wddDataset2() %>%
-      select(Female       = Gender
-             , NESB       = NESB_Sum
-             , Disability = Disability_HC
-             , Indigenous = Indigenous_HC) %>%
-      mutate(Female = ifelse(Female == "Female", "Yes", "No")) %>% 
+    divDataset <- wddDataset2()
+    
+    divDataset$Gender <- ifelse(divDataset$Gender == "Female", "Yes", "No")
+    
+    divDataset %>%
+      select(Gender, NESB_Sum, Disability_HC, Indigenous_HC) %>%
       gather() %>% # convert to long format
       group_by(key, value) %>%
-      summarise(n = n()) %>%
-      mutate(perc = ifelse(key == "Indigenous_HC" & sum(n) < 100, "*"
-                           , ifelse(key == "Disability_HC" & sum(n) <100, "*"
-                           , paste0(round(n / sum(n) * 100, 2), "%")))
+      summarise(n=n()) %>%
+      mutate(perc = ifelse(key == "Indigenous_HC" & sum(n) < 100
+                           , "*"
+                           , ifelse(key == "Disability_HC" & sum(n) <100
+                                    , "*"
+                                    , paste0(round(n / sum(n) * 100, 2), "%")))
              , percCount = ifelse(perc == "*", "*", paste(perc, paste0("(", n, ")")))) %>%
       select(key, value, percCount) %>%
       spread(value, percCount) %>% # convert back to short format
-      rename('Indicator' = key) ->
-    divPrfl
-
+      select('Indicator' = key, Yes, No) ->
+      divPrfl
+    
+    divPrfl <- replace(divPrfl, (divPrfl == "Gender"), "Female")
+    divPrfl <- replace(divPrfl, (divPrfl == "NESB_Sum"), "NESB")
+    divPrfl <- replace(divPrfl, (divPrfl == "Disability_HC"), "Disability")
+    divPrfl <- replace(divPrfl, (divPrfl == "Indigenous_HC"), "Indigenous")
+    
     # Below 2 replace functions replace NAs in table for Female and NESB metrics with "0% (0)"
     
     divPrfl <- replace(divPrfl, is.na(divPrfl) & divPrfl$Indicator == "Female", "0% (0)")
     divPrfl <- replace(divPrfl, is.na(divPrfl) & divPrfl$Indicator == "NESB", "0% (0)")
-
+    
     # Below if statement replaces NAs in table for Disability 
     # and Indigenous metrics with "0% (0)" and "*" accordingly.
     
@@ -278,22 +285,22 @@ shinyServer(function(input, output, session) {
          grepl('100', divPrfl[3,2])) 
     {
       
-        divPrfl <- replace(divPrfl, is.na(divPrfl) & divPrfl$Indicator == "Disability", "0% (0)")
-        divPrfl <- replace(divPrfl, is.na(divPrfl) & divPrfl$Indicator == "Indigenous", "0% (0)")
-    
+      divPrfl <- replace(divPrfl, is.na(divPrfl) & divPrfl$Indicator == "Disability", "0% (0)")
+      divPrfl <- replace(divPrfl, is.na(divPrfl) & divPrfl$Indicator == "Indigenous", "0% (0)")
+      
     } else if (grepl('*', divPrfl[1,3]) || 
                grepl('*', divPrfl[1,2]) || 
                grepl('*', divPrfl[3,3]) || 
                grepl('*', divPrfl[3,2])) 
     {
       
-        divPrfl <- replace(divPrfl, is.na(divPrfl) & divPrfl$Indicator == "Disability", "*")
-        divPrfl <- replace(divPrfl, is.na(divPrfl) & divPrfl$Indicator == "Indigenous", "*")
-    
+      divPrfl <- replace(divPrfl, is.na(divPrfl) & divPrfl$Indicator == "Disability", "*")
+      divPrfl <- replace(divPrfl, is.na(divPrfl) & divPrfl$Indicator == "Indigenous", "*")
+      
     } else
     {
       
-        divPrfl
+      divPrfl
       
     }
 
