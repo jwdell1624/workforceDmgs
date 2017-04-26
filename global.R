@@ -1,11 +1,16 @@
-# TODO wrap suppress messages, test suppressPackageStartupMessages() 
 # TODO add brief comment next to each library loaded
-suppressMessages(library(shiny))
-suppressMessages(library(readr))
-suppressMessages(library(plotly))       # interactive ploting
-suppressMessages(library(ggplot2))
-suppressMessages(library(dplyr))        # data wrangling
-suppressMessages(library(tidyr))
+suppressPackageStartupMessages({
+  suppressMessages(library(shiny))        # web framework
+  suppressMessages(library(readr))        # fast I/O
+  suppressMessages(library(plotly))       # interactive ploting
+  suppressMessages(library(ggplot2))      # data visualisation
+  suppressMessages(library(dplyr))        # data wrangling
+  suppressMessages(library(tidyr))        # tidy data
+})
+
+# Import Workforce Analytics team functions
+source("/proj/workforce/www/scriptsMiscAdhocs/waFunctions/clssnGrpFun.R") # Group classifications
+source("/proj/workforce/www/scriptsMiscAdhocs/waFunctions/scaleHCFun.R") # Sum HC and percentage of groups
 
 # Enable Bookmarking
 enableBookmarking(store = "url")
@@ -45,12 +50,18 @@ df$Mobility_Indicator <- ifelse(df$Mobility_Indicator == "N", "No", "Yes")
 df$OOM_Indicator      <- ifelse(df$OOM_Indicator == "N", "No", "Yes")
 df$Manager_Indicator  <- ifelse(df$Manager_Indicator == "N", "No", "Yes")
 
+# Add grouped classification column
+df <- clssnGrpFun(df)
+
 # TODO - create function to handle this as repeated across WA code base
 # re-format as factor for Tenure, Classification and Age Range plot order
 df$Actual_Classification <- factor(df$Actual_Classification
                                    , levels = c("Not assigned", "EXT", "CAD", "APS1", "APS2", 
                                                 "APS3", "APS4", "APS5", "APS6", "EL1", "EL21", 
                                                 "EL22", "SES1", "SES2"))
+classGrp                 <- factor(df$clssnCat
+                                   , levels = c("Not assigned", "General Employee"
+                                                , "Executive Level", "Senior Executive"))
 df$ATO_Tenure_Range      <- factor(df$ATO_Tenure_Range
                                    , levels = c("Not assigned", "< 5","5 - 9", "10 - 14","15 - 19"
                                                 ,"20 - 24", "25 - 29","30 - 34","35 - 39","40 - 44"

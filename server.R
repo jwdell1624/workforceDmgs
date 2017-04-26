@@ -2,8 +2,6 @@ shinyServer(function(input, output, session) {
   
   # DYNAMIC UI -------------------------------------------------------------------------------------
   
-  # TODO - remove WAdashboard naming conventions e.g. from "wddSelOrg" to "selOrg", "wddDataset" etc.
-  # TODO - remove explicit printing of 'ttl' see wiki for a code example
   # Dynamic UI for Location/Group plot
   output$dt <- renderUI({
     
@@ -12,26 +10,25 @@ shinyServer(function(input, output, session) {
     
   })
   
-  output$locnGrpTitle <- renderUI({
+  # Dynamic title for Classification plot heading
+  output$clssnTitle <- renderUI({
     
     # Take a dependency on action button
     input$buildDashboard
     
     isolate({
       
-      if (input$wddSelOrg != "Site"){
-        ttl <- "Position Location" 
+      if (input$selOrg == "Job Family"){
+        "Classification and Group by BSL" 
       } else { 
-        ttl <- "Group by BSL"
+        "Classification and Job Family"
       }
-      # print object
-      ttl
       
     })
     
   })
   
-  # dynamic ui for Job Family/Group plot
+  # Dynamic title for Classification tabset panel - tab 2 plot heading
   output$jfGrpTitle <- renderUI({
     
     # Take a dependency on action button
@@ -39,214 +36,166 @@ shinyServer(function(input, output, session) {
     
     isolate({
       
-      if (input$wddSelOrg != "Job Family"){
-        ttl <- "Job Family" 
+      if (input$selOrg == "Job Family"){
+        "Group by BSL"
       } else { 
-        ttl <- "Group by BSL"
+        "Job Family"
       }
-      # print object
-      ttl
       
     })
     
   })
   
-  # dynamic ui for Classification plot heading
-  output$classnTitle <- renderUI({
+  # Dynamic title for plot 3 - Position Location/Group by BSL
+  output$locnGrpTitle <- renderUI({
     
     # Take a dependency on action button
     input$buildDashboard
     
     isolate({
-      
-      if (input$wddSelOrg == "Job Family"){
-        ttl <- "Classification and Group by BSL" 
-      } else { 
-        ttl <- "Classification and Job Family"
+
+      if (input$selOrg == "Site"){
+        "Group by BSL"
+      } else {
+        "Position Location"
       }
-      # print object
-      ttl
-      
+
     })
     
   })
   
   # DATA SUBSET ------------------------------------------------------------------------------------
   
-  # TODO remove explicit printing of "dfSbst"
   # Subset all data by employment type option
-  wddDataset <- reactive({
+  dataset <- reactive({
     
     # Take a dependency on action button
     input$buildDashboard
     
     isolate({
       
-      if (input$wddSelEmpTyp == "All Employment Types"){
-        dfSbst <- df
+      if (input$selEmpTyp == "All Employment Types"){
+        df
       } else {
-        dfSbst <- subset(df, df$Perm_Temp == input$wddSelEmpTyp)
+        subset(df, df$Perm_Temp == input$selEmpTyp)
       }
-      # print dataframe
-      dfSbst
-      
+
     })
     
   })
   
   # Then subset by lens option
-  wddDataset2 <- reactive({
+  dataset2 <- reactive({
     
     # Take a dependency on action button
     input$buildDashboard
     
     isolate({
-      switch(input$wddSelOrg
-             , "ATO"             = wddDataset()
-             , "Group"           = subset(wddDataset(), wddDataset()$Subplan == input$wddSelGrp)
-             , "BSL"             = subset(wddDataset(), wddDataset()$BSL == input$wddSelBSL)
-             , "Branch"          = subset(wddDataset(), wddDataset()$Org_Unit_Branch == input$wddSelBranch)
-             , "Team/Org.Unit"   = subset(wddDataset(), wddDataset()$Org_Unit_Team == input$wddSelTeam)
-             , "Cost Centre"     = subset(wddDataset(), wddDataset()$Cost_Centre_Code == input$wddSelCstCntr)
-             , "Classification"  = subset(wddDataset(), wddDataset()$Actual_Classification == input$wddSelClassn)
-             , "Job Family"      = subset(wddDataset(), wddDataset()$Job_Family == input$wddSelJob)
-             , "Site"            = subset(wddDataset(), wddDataset()$Position_Location == input$wddSelSite)
-             , "Manager"         = subset(wddDataset(), wddDataset()$Manager_Indicator == input$wddSelMgr)
-             , "Gender"          = subset(wddDataset(), wddDataset()$Gender == input$wddSelGndr)
-             , "NESB"            = subset(wddDataset(), wddDataset()$NESB_Sum == input$wddSelNESB)
-             , "Disability"      = subset(wddDataset(), wddDataset()$Disability_HC == input$wddSelDsbl)
-             , "Indigenous"      = subset(wddDataset(), wddDataset()$Indigenous_HC == input$wddSelIndg)
+      switch(input$selOrg
+             , "ATO"             = dataset()
+             , "Group"           = subset(dataset(), dataset()$Subplan == input$selGrp)
+             , "BSL"             = subset(dataset(), dataset()$BSL == input$selBSL)
+             , "Branch"          = subset(dataset(), dataset()$Org_Unit_Branch == input$selBranch)
+             , "Team/Org.Unit"   = subset(dataset(), dataset()$Org_Unit_Team == input$selTeam)
+             , "Cost Centre"     = subset(dataset(), dataset()$Cost_Centre_Code == input$selCstCntr)
+             , "Classification"  = subset(dataset()
+                                          , dataset()$Actual_Classification == input$selClssn)
+             , "Classification (Grouped)"
+                                 = subset(dataset(), dataset()$clssnCat == input$selClssnGrp)
+             , "Job Family"      = subset(dataset(), dataset()$Job_Family == input$selJob)
+             , "Site"            = subset(dataset(), dataset()$Position_Location == input$selSite)
+             , "Manager"         = subset(dataset(), dataset()$Manager_Indicator == input$selMgr)
+             , "Gender"          = subset(dataset(), dataset()$Gender == input$selGndr)
+             , "NESB"            = subset(dataset(), dataset()$NESB_Sum == input$selNESB)
+             , "Disability"      = subset(dataset(), dataset()$Disability_HC == input$selDsbl)
+             , "Indigenous"      = subset(dataset(), dataset()$Indigenous_HC == input$selIndg)
       )
     })
   })
   
-  # DATA WRANGLING LOGIC ----------------------------------------------------------------
-  
-  # TODO - create fn to adhere to DRY when creating HC/% using dplyr e.g. :
-  # demoFn <- function(df, columns){
-  #   df() %>% 
-  #     select(columns) %>% 
-  #     group_by(columns) %>% 
-  #     summarise(HC = n()) %>% 
-  #     ungroup() %>% 
-  #     mutate(Percent = round(HC/sum(HC)*100, 2)) -> x
-  #  return(x)
-  # }
+  # DATA WRANGLING LOGIC ---------------------------------------------------------------------------
   
   # Group/bsl data
-  wddOrgPrfl <- reactive({
+  orgPrfl <- reactive({
     
-    wddDataset2() %>% 
-      select(Subplan
-             , BSL) %>% 
-      group_by(Subplan
-               , BSL) %>% 
-      summarise(HC = n()) %>% 
-      ungroup() %>% 
-      mutate(Percent = round(HC/sum(HC)*100, 2)) ->
-    orgPrfl
+    scaleHC(dataset2(), c("Subplan", "BSL"))
     
   })
   
   # Age/tenure data 
-  wddAgeTnrPrfl <- reactive({
+  ageTnrPrfl <- reactive({
     
-    wddDataset2() %>% 
-      select(Age_Range_5yr
-             , ATO_Tenure_Range) %>% 
-      group_by(Age_Range_5yr
-               , ATO_Tenure_Range) %>% 
-      summarise(HC = n()) %>% 
-      ungroup() %>% 
-      mutate(Percent = round(HC/sum(HC)*100, 2)) ->
-    ageTnrPrfl  
+    scaleHC(dataset2(), c("Age_Range_5yr", "ATO_Tenure_Range"))
     
   })
   
   # Age data - 5yrs
-  wddAgePrfl <- reactive({
+  agePrfl <- reactive({
     
-    wddDataset2() %>% 
-      select(Age_Range_5yr) %>% 
-      group_by(Age_Range_5yr) %>%
-      summarise(HC = n()) %>% 
-      ungroup() %>% 
-      mutate(Percent = round(HC/sum(HC)*100, 2)) ->
-    agePrfl
+    scaleHC(dataset2(), "Age_Range_5yr")
     
   })
   
   # Classification data
-  wddClassnPrfl <- reactive({
+  clssnPrfl <- reactive({
     
-    wddDataset2() %>% 
-      select(Actual_Classification) %>% 
-      group_by(Actual_Classification) %>%
-      summarise(HC = n()) %>% 
-      ungroup() %>% 
-      mutate(Percent = round(HC/sum(HC)*100, 2)) ->
-    classnPrfl    
+    scaleHC(dataset2(), "Actual_Classification")
+    
+  })
+  
+  # Grouped Classification data
+  clssnGrpPrfl <- reactive({
+    
+    scaleHC(dataset2(), "clssnCat")
     
   })
   
   # ATO Tenure data
-  wddTnrPrfl <- reactive({
+  tnrPrfl <- reactive({
     
-    wddDataset2() %>% 
-      select(ATO_Tenure_Range) %>% 
-      group_by(ATO_Tenure_Range) %>%
-      summarise(HC = n()) %>% 
-      ungroup() %>% 
-      mutate(Percent = round(HC/sum(HC)*100, 2)) ->
-    tnrPrfl    
+    scaleHC(dataset2(), "ATO_Tenure_Range")
     
   })
   
   # Job Family data
-  wddJobPrfl <- reactive({
+  jobPrfl <- reactive({
     
-    wddDataset2() %>% 
-      select(Job_Family) %>% 
-      group_by(Job_Family) %>%
-      summarise(HC = n()) %>% 
-      ungroup() %>% 
-      mutate(Percent = round(HC/sum(HC)*100, 2)) ->
-    jfPrfl
+    scaleHC(dataset2(), "Job_Family")
     
   })
   
-  # TODO - explore bring "wddCommsPrfl"/"wddFuncPrfl" into plotly calls
+  # TODO - explore bring "commsPrfl"/"funcPrfl" into plotly calls
   # Comms Persona data
-  wddCommsPrfl <- reactive({
+  commsPrfl <- reactive({
     
-    as.data.frame(table(wddDataset2()$Comms_Persona))
+    as.data.frame(table(dataset2()$Comms_Persona))
     
   })
   
   # Workforce Function data
-  wddFuncPrfl <- reactive({
+  funcPrfl <- reactive({
     
-    as.data.frame(table(wddDataset2()$Work_Function))
+    as.data.frame(table(dataset2()$Work_Function))
     
   })
   
   # Position Location data
-  wddLocnPrfl <- reactive({
+  locnPrfl <- reactive({
     
-    wddDataset2() %>% 
+    dataset2() %>% 
       select(Position_Location) %>% 
       group_by(Position_Location) %>%
       summarise(HC = n()) %>% 
       ungroup() %>% 
       mutate(Percent = round(HC/sum(HC)*100, 2)) ->
-      locnPrfl
+    df2
     
   })
   
   # Diversity summary
   divPrfl <- reactive({
     
-    divDataset <- wddDataset2()
+    divDataset <- dataset2()
     
     divDataset$Gender <- ifelse(divDataset$Gender == "Female", "Yes", "No")
     
@@ -309,7 +258,7 @@ shinyServer(function(input, output, session) {
   # MDP plot data
   mdpPrfl <- reactive({
     
-    wddDataset2() %>% 
+    dataset2() %>% 
       select(MDP_Status) %>% 
       group_by(MDP_Status) %>% 
       summarise(n = n()) %>% 
@@ -325,7 +274,7 @@ shinyServer(function(input, output, session) {
   # F2F, eLRN and External training data
   ldPrfl <- reactive({
     
-    wddDataset2() %>% 
+    dataset2() %>% 
       select(F2F_Count
              , eLRN_Count
              , External_Count) %>% 
@@ -344,7 +293,7 @@ shinyServer(function(input, output, session) {
   # External training cost data
   costPrfl <- reactive({
     
-    wddDataset2() %>% 
+    dataset2() %>% 
       select(External_Cost) %>% 
       summarise(sumCost = sum(External_Cost)
                 , HC = n()
@@ -371,7 +320,7 @@ shinyServer(function(input, output, session) {
   # Mobility summary
   mobPrfl <- reactive({
     
-    wddDataset2() %>%
+    dataset2() %>%
       select(`Mobility Register` = Mobility_Indicator
              , `Order of Merit`  = OOM_Indicator) %>% 
       gather() %>% # convert to long format
@@ -389,11 +338,10 @@ shinyServer(function(input, output, session) {
     
   })
   
-  ####################################################################################################
+  # Plots ------------------------------------------------------------------------------------------
   
-  # Plots ####
-  
-  # Age plot 5yr ####
+  # TODO - make y in plot_ly dynamic rather thannnnnnn have an if/else for each plot
+  # Age plot 5yr
   output$agePlot <- renderPlotly({
     
     # Take a dependency on action button
@@ -403,13 +351,13 @@ shinyServer(function(input, output, session) {
       
       # plot variables
       x <- list(title = "")
-      y <- list(title = input$wddSelView)
+      y <- list(title = input$selView)
       m <- list(t = 10, r = 30, b = 50)
       
-      if (input$wddSelView == "Headcount"){
+      if (input$selView == "Headcount"){
         
         # plotly build
-        p <- plot_ly(data = wddAgePrfl()
+        p <- plot_ly(data = agePrfl()
                      , x = Age_Range_5yr
                      , y = HC
                      , type = "bar") %>% 
@@ -420,10 +368,10 @@ shinyServer(function(input, output, session) {
         # print plotly build
         p
         
-      } else if (input$wddSelView == "Percentage"){
+      } else if (input$selView == "Percentage"){
         
         # plotly layout
-        p <- plot_ly(data = wddAgePrfl()
+        p <- plot_ly(data = agePrfl()
                      , x = Age_Range_5yr
                      , y = Percent
                      , type = "bar") %>% 
@@ -440,9 +388,7 @@ shinyServer(function(input, output, session) {
     
   })
   
-  #__________________________________________________________________________________________________#
-  
-  # Age by Tenure plot ####
+  # Age by Tenure plot
   output$ageTnrPlot <- renderPlotly({
     
     # Take a dependency on action button
@@ -454,13 +400,13 @@ shinyServer(function(input, output, session) {
       x.order = list("< 20","20 - 24","25 - 29","30 - 34","35 - 39", "40 - 44"
                      , "45 - 49", "50 - 54", "55 - 59", "60 - 64", "65 - 69", ">= 70")
       x <- list(title = "", categoryorder = "array", categoryarray = x.order)
-      y <- list(title = input$wddSelView)
+      y <- list(title = input$selView)
       m <- list(t = 10, r = 30, b = 50)
       
-      if (input$wddSelView == "Headcount"){
+      if (input$selView == "Headcount"){
         
         # plotly layout
-        p <- plot_ly(data = wddAgeTnrPrfl()
+        p <- plot_ly(data = ageTnrPrfl()
                      , x = Age_Range_5yr
                      , y = HC
                      , group = ATO_Tenure_Range
@@ -474,10 +420,10 @@ shinyServer(function(input, output, session) {
         # print plotly build
         p
         
-      } else if (input$wddSelView == "Percentage"){
+      } else if (input$selView == "Percentage"){
         
         # plotly layout
-        p <- plot_ly(data = wddAgeTnrPrfl()
+        p <- plot_ly(data = ageTnrPrfl()
                      , x = Age_Range_5yr
                      , y = Percent
                      , group = ATO_Tenure_Range
@@ -497,10 +443,8 @@ shinyServer(function(input, output, session) {
     
   }) 
   
-  #__________________________________________________________________________________________________#
-  
-  # Classification profile plot ####
-  output$classnPlot <- renderPlotly({
+  # Classification profile plot
+  output$clssnPlot <- renderPlotly({
     
     # Take a dependency on action button
     input$buildDashboard
@@ -509,13 +453,13 @@ shinyServer(function(input, output, session) {
   
       # plot variables
       x <- list(title = "")
-      y <- list(title = input$wddSelView)
+      y <- list(title = input$selView)
       m <- list(t = 10, r = 30)
       
-      if (input$wddSelView == "Headcount"){
+      if (input$selView == "Headcount"){
         
         # plotly layout
-        p <- plot_ly(data = wddClassnPrfl()
+        p <- plot_ly(data = clssnPrfl()
                      , x = Actual_Classification
                      , y = HC
                      , type = "bar") %>% 
@@ -526,10 +470,10 @@ shinyServer(function(input, output, session) {
         # print plotly build
         p
         
-      } else if (input$wddSelView == "Percentage"){
+      } else if (input$selView == "Percentage"){
         
         # plotly layout
-        p <- plot_ly(data = wddClassnPrfl()
+        p <- plot_ly(data = clssnPrfl()
                      , x = Actual_Classification
                      , y = Percent
                      , type = "bar") %>% 
@@ -558,13 +502,13 @@ shinyServer(function(input, output, session) {
  
       # plot variables
       x <- list(title = "")
-      y <- list(title = input$wddSelView)
+      y <- list(title = input$selView)
       m <- list(t = 10, r = 30, b = 50)
       
-      if (input$wddSelView == "Headcount"){
+      if (input$selView == "Headcount"){
         
         # plotly layout
-        p <- plot_ly(data = wddTnrPrfl()
+        p <- plot_ly(data = tnrPrfl()
                      , x = ATO_Tenure_Range
                      , y = HC
                      , type = "bar") %>% 
@@ -575,10 +519,10 @@ shinyServer(function(input, output, session) {
         # print plotly build
         p
         
-      } else if (input$wddSelView == "Percentage"){
+      } else if (input$selView == "Percentage"){
         
         # plotly layout
-        p <- plot_ly(data = wddTnrPrfl()
+        p <- plot_ly(data = tnrPrfl()
                      , x = ATO_Tenure_Range
                      , y = Percent
                      , type = "bar") %>% 
@@ -607,15 +551,15 @@ shinyServer(function(input, output, session) {
       
       # plot variables
       x <- list(title = "")
-      y <- list(title = input$wddSelView)
+      y <- list(title = input$selView)
       
-      if (input$wddSelView == "Headcount" & input$wddSelOrg != "Job Family"){
+      if (input$selView == "Headcount" & input$selOrg != "Job Family"){
         
         # local margin
         m <- list(t = 10, r = 30, b = 80)
         
         # plotly layout
-        p <- plot_ly(data = wddJobPrfl()
+        p <- plot_ly(data = jobPrfl()
                      , x = Job_Family
                      , y = HC
                      , type = "bar") %>% 
@@ -626,13 +570,13 @@ shinyServer(function(input, output, session) {
         # print plotly build
         p
         
-      } else if (input$wddSelView == "Percentage" & input$wddSelOrg != "Job Family"){
+      } else if (input$selView == "Percentage" & input$selOrg != "Job Family"){
         
         # local margin
         m <- list(t = 10, r = 30, b = 80)
         
         # plotly layout
-        p <- plot_ly(data = wddJobPrfl()
+        p <- plot_ly(data = jobPrfl()
                      , x = Job_Family
                      , y = Percent
                      , type = "bar") %>% 
@@ -643,13 +587,13 @@ shinyServer(function(input, output, session) {
         # print plotly build
         p
         
-      } else if (input$wddSelView == "Headcount" & input$wddSelOrg == "Job Family"){
+      } else if (input$selView == "Headcount" & input$selOrg == "Job Family"){
         
         # local margin
         m <- list(t = 10, r = 30)
         
         # plotly layout
-        p <- plot_ly(wddOrgPrfl()
+        p <- plot_ly(orgPrfl()
                      , x = Subplan
                      , y = HC
                      , group = BSL
@@ -663,13 +607,13 @@ shinyServer(function(input, output, session) {
         # print plotly build
         p
         
-      } else if (input$wddSelView == "Percentage" & input$wddSelOrg == "Job Family"){
+      } else if (input$selView == "Percentage" & input$selOrg == "Job Family"){
         
         # local margin
         m <- list(t = 10, r = 30)
         
         # plotly layout
-        p <- plot_ly(wddOrgPrfl()
+        p <- plot_ly(orgPrfl()
                      , x = Subplan
                      , y = Percent
                      , group = BSL
@@ -701,15 +645,15 @@ shinyServer(function(input, output, session) {
       
       # plot variables
       x <- list(title = "")
-      y <- list(title = input$wddSelView)
+      y <- list(title = input$selView)
       
-      if (input$wddSelView == "Headcount" & input$wddSelOrg != "Site"){
+      if (input$selView == "Headcount" & input$selOrg != "Site"){
         
         # local margin 
         m <- list(t = 10, r = 30, b = 80)
         
         # plotly layout
-        p <- plot_ly(data = wddLocnPrfl()
+        p <- plot_ly(data = locnPrfl()
                      , x = Position_Location
                      , y = HC
                      , type = "bar") %>% 
@@ -720,13 +664,13 @@ shinyServer(function(input, output, session) {
         # print plotly build
         p
         
-      } else if (input$wddSelView == "Percentage" & input$wddSelOrg != "Site"){
+      } else if (input$selView == "Percentage" & input$selOrg != "Site"){
         
         # local margin 
         m <- list(t = 10, r = 30, b = 80)
         
         # plotly layout
-        p <- plot_ly(data = wddLocnPrfl()
+        p <- plot_ly(data = locnPrfl()
                      , x = Position_Location
                      , y = Percent
                      , type = "bar") %>% 
@@ -737,13 +681,13 @@ shinyServer(function(input, output, session) {
         # print plotly build
         p
         
-      } else if (input$wddSelView == "Headcount" & input$wddSelOrg == "Site"){
+      } else if (input$selView == "Headcount" & input$selOrg == "Site"){
         
         # local margin 
         m <- list(t = 10, b = 30, l = 60, r = 30)
         
         # plotly layout 
-        p <- plot_ly(wddOrgPrfl()
+        p <- plot_ly(orgPrfl()
                      , x = Subplan
                      , y = HC
                      , group = BSL
@@ -757,13 +701,13 @@ shinyServer(function(input, output, session) {
         # print plotly build
         p
         
-      } else if (input$wddSelView == "Percentage" & input$wddSelOrg == "Site"){
+      } else if (input$selView == "Percentage" & input$selOrg == "Site"){
         
         # local margin 
         m <- list(t = 10, b = 30, l = 60, r = 30)
         
         # plotly layout
-        p <- plot_ly(wddOrgPrfl()
+        p <- plot_ly(orgPrfl()
                      , x = Subplan
                      , y = Percent
                      , group = BSL
@@ -861,7 +805,7 @@ shinyServer(function(input, output, session) {
   #________________________________________________________________________________________________#
   
   output$mnPnl <- reactive({
-    nrow(wddDataset2())
+    nrow(dataset2())
   })
   outputOptions(output, 'mnPnl', suspendWhenHidden = FALSE)
   

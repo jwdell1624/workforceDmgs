@@ -21,7 +21,7 @@ shinyUI(function(request) {
       
       sidebarPanel(width = 3, 
       
-        selectInput(inputId    = "wddSelEmpTyp"
+        selectInput(inputId    = "selEmpTyp"
                     , label    = "Choose employment filter:"
                     , choices  = c("All Employment Types"
                                   , "Ongoing"
@@ -30,13 +30,13 @@ shinyUI(function(request) {
                                   , "External") # explicitly ordered
                     , selected = "All Employment Types"),
         
-        radioButtons(inputId    = "wddSelView"
+        radioButtons(inputId    = "selView"
                      , label    = "Choose result type:"
                      , choices  = c("Headcount"
                                     , "Percentage")
                      , selected = "Headcount"),
         
-        radioButtons(inputId   = "wddSelOrg"
+        radioButtons(inputId   = "selOrg"
                      , label   = "Choose pre-fill option:"
                      , choices = c("ATO"
                                    , "Group"
@@ -45,6 +45,7 @@ shinyUI(function(request) {
                                    , "Team/Org.Unit"
                                    , "Cost Centre"
                                    , "Classification"
+                                   , "Classification (Grouped)"
                                    , "Job Family"
                                    , "Site"
                                    , "Manager"
@@ -54,68 +55,73 @@ shinyUI(function(request) {
                                    , "Indigenous") # explicitly ordered
                      , selected = "ATO"),
       
-        conditionalPanel(condition = "input.wddSelOrg == 'Group'", 
-          selectInput(inputId   = "wddSelGrp"
+        conditionalPanel(condition = "input.selOrg == 'Group'", 
+          selectInput(inputId   = "selGrp"
                       , label   = "Choose Group:"
                       , choices = sort(unique(df$Subplan)))),
         
-        conditionalPanel(condition = "input.wddSelOrg == 'BSL'",
-          selectInput(inputId   = "wddSelBSL"
+        conditionalPanel(condition = "input.selOrg == 'BSL'",
+          selectInput(inputId   = "selBSL"
                       , label   = "Choose BSL:"
                       , choices = sort(unique(df$BSL)))),
         
-        conditionalPanel(condition = "input.wddSelOrg == 'Branch'",
-          selectInput(inputId   = "wddSelBranch"
+        conditionalPanel(condition = "input.selOrg == 'Branch'",
+          selectInput(inputId   = "selBranch"
                       , label   = "Choose Branch:"
                       , choices = sort(unique(df$Org_Unit_Branch)))),
         
-        conditionalPanel(condition = "input.wddSelOrg == 'Team/Org.Unit'",
-          selectInput(inputId   = "wddSelTeam"
+        conditionalPanel(condition = "input.selOrg == 'Team/Org.Unit'",
+          selectInput(inputId   = "selTeam"
                       , label   = "Choose Team/Org.Unit:"
                       , choices = sort(unique(df$Org_Unit_Team)))),
         
-        conditionalPanel(condition = "input.wddSelOrg == 'Cost Centre'",
-          selectInput(inputId   = "wddSelCstCntr"
+        conditionalPanel(condition = "input.selOrg == 'Cost Centre'",
+          selectInput(inputId   = "selCstCntr"
                       , label   = "Choose Cost Centre:"
                       , choices = sort(unique(df$Cost_Centre_Code)))),
         
-        conditionalPanel(condition = "input.wddSelOrg == 'Classification'",
-        selectInput(inputId   =  "wddSelClassn"
-                    , label   = "Choose Classification:"
-                    , choices = as.character(sort(unique(df$Actual_Classification))))),
+        conditionalPanel(condition = "input.selOrg == 'Classification'",
+          selectInput(inputId   =  "selClssn"
+                    , label     = "Choose Classification:"
+                    , choices   = as.character(sort(unique(df$Actual_Classification))))),
         
-        conditionalPanel(condition = "input.wddSelOrg == 'Job Family'",
-          selectInput(inputId   = "wddSelJob"
+        conditionalPanel(condition = "input.selOrg == 'Classification (Grouped)'",
+          selectInput(inputId   =  "selClssnGrp"
+                      , label   = "Choose Classification Group:"
+                      , choices = as.character(sort(unique(df$clssnCat))))),
+        
+        conditionalPanel(condition = "input.selOrg == 'Job Family'",
+          selectInput(inputId   = "selJob"
                       , label   = "Choose Job Family:"
                       , choices = sort(unique(df$Job_Family)))),
         
-        conditionalPanel(condition = "input.wddSelOrg == 'Site'",
-          selectInput(inputId   = "wddSelSite"
+        conditionalPanel(condition = "input.selOrg == 'Site'",
+          selectInput(inputId   = "selSite"
                       , label   = "Choose Site:"
                       , choices = sort(unique(df$Position_Location)))),
         
-        conditionalPanel(condition = "input.wddSelOrg == 'Manager'",
-          selectInput(inputId   = "wddSelMgr"
+        conditionalPanel(condition = "input.selOrg == 'Manager'",
+          selectInput(inputId   = "selMgr"
                       , label   = "Choose Manager Indicator:"
                       , choices = sort(unique(df$Manager_Indicator)))),
         
-        conditionalPanel(condition = "input.wddSelOrg == 'Gender'",
-          selectInput(inputId   = "wddSelGndr"
+        conditionalPanel(condition = "input.selOrg == 'Gender'",
+          selectInput(inputId   = "selGndr"
                       , label   = "Choose Gender:"
                       , choices = sort(unique(df$Gender)))),
         
-        conditionalPanel(condition = "input.wddSelOrg == 'NESB'",
-          selectInput(inputId   = "wddSelNESB"
+        conditionalPanel(condition = "input.selOrg == 'NESB'",
+          selectInput(inputId   = "selNESB"
                       , label   = "Choose NESB Indicator:"
                       , choices = sort(unique(df$NESB_Sum)))),
         
-        conditionalPanel(condition = "input.wddSelOrg == 'Disability'",
-          selectInput(inputId   = "wddSelDsbl"
+        conditionalPanel(condition = "input.selOrg == 'Disability'",
+          selectInput(inputId   = "selDsbl"
                       , label   = "Choose Disability Indicator:"
                       , choices = sort(unique(df$Disability_HC)))),
         
-        conditionalPanel(condition = "input.wddSelOrg == 'Indigenous'",
-          selectInput(inputId   = "wddSelIndg"
+        conditionalPanel(condition = "input.selOrg == 'Indigenous'",
+          selectInput(inputId   = "selIndg"
                       , label   = "Choose Indigenous Indicator:"
                       , choices = sort(unique(df$Indigenous_HC)))),
       
@@ -160,10 +166,10 @@ shinyUI(function(request) {
                             , selected = "Age")),
 
           column(width = 6
-                 , h4(strong(uiOutput("classnTitle")))
-                 , tabsetPanel(id = "clsnJobTab"
+                 , h4(strong(uiOutput("clssnTitle")))
+                 , tabsetPanel(id = "clssnJobTab"
                                , tabPanel(title = "Classification"
-                                          , plotlyOutput(outputId = "classnPlot"
+                                          , plotlyOutput(outputId = "clssnPlot"
                                                          , height = plot.height))
                                , tabPanel(title = uiOutput("jfGrpTitle")
                                           , plotlyOutput(outputId = "jfPlot"
