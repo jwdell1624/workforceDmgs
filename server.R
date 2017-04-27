@@ -115,80 +115,60 @@ shinyServer(function(input, output, session) {
   
   # DATA WRANGLING LOGIC ---------------------------------------------------------------------------
   
-  # Group/bsl data
-  orgPrfl <- reactive({
-    
-    scaleHC(dataset2(), c("Subplan", "BSL"))
-    
-  })
-  
-  # Age/tenure data 
-  ageTnrPrfl <- reactive({
-    
-    scaleHC(dataset2(), c("Age_Range_5yr", "ATO_Tenure_Range"))
-    
-  })
-  
   # Age data - 5yrs
   agePrfl <- reactive({
     
-    scaleHC(dataset2(), "Age_Range_5yr")
-    
-  })
-  
-  # Classification data
-  clssnPrfl <- reactive({
-    
-    scaleHC(dataset2(), "Actual_Classification")
-    
-  })
-  
-  # Grouped Classification data
-  clssnGrpPrfl <- reactive({
-    
-    scaleHC(dataset2(), "clssnCat")
+    scaleHC(dataset2(), "Age_Range_5yr", input$selView)
     
   })
   
   # ATO Tenure data
   tnrPrfl <- reactive({
     
-    scaleHC(dataset2(), "ATO_Tenure_Range")
+    scaleHC(dataset2(), "ATO_Tenure_Range", input$selView)
+    
+  })
+  
+  # Age/tenure data 
+  ageTnrPrfl <- reactive({
+    
+    scaleHC(dataset2(), c("Age_Range_5yr", "ATO_Tenure_Range"), input$selView)
+    
+  })
+  
+  # Classification data
+  clssnPrfl <- reactive({
+    
+    scaleHC(dataset2(), "Actual_Classification", input$selView)
     
   })
   
   # Job Family data
   jobPrfl <- reactive({
     
-    scaleHC(dataset2(), "Job_Family")
+    scaleHC(dataset2(), "Job_Family", input$selView)
     
   })
   
-  # TODO - explore bring "commsPrfl"/"funcPrfl" into plotly calls
-  # Comms Persona data
-  commsPrfl <- reactive({
+  # Group/bsl data
+  orgPrfl <- reactive({
     
-    as.data.frame(table(dataset2()$Comms_Persona))
-    
-  })
-  
-  # Workforce Function data
-  funcPrfl <- reactive({
-    
-    as.data.frame(table(dataset2()$Work_Function))
+    scaleHC(dataset2(), c("Subplan", "BSL"), input$selView)
     
   })
   
   # Position Location data
   locnPrfl <- reactive({
     
-    dataset2() %>% 
-      select(Position_Location) %>% 
-      group_by(Position_Location) %>%
-      summarise(HC = n()) %>% 
-      ungroup() %>% 
-      mutate(Percent = round(HC/sum(HC)*100, 2)) ->
-    df2
+    scaleHC(dataset2(), "Position_Location", input$selView)
+    
+  })
+  
+  # TODO - decide where this goes in the order and giving to the ui selection dropdown
+  # Grouped Classification data
+  clssnGrpPrfl <- reactive({
+    
+    scaleHC(dataset2(), "clssnCat")
     
   })
   
@@ -215,19 +195,17 @@ shinyServer(function(input, output, session) {
       select('Indicator' = key, Yes, No) ->
       divPrfl
     
+    # Rename row names
     divPrfl <- replace(divPrfl, (divPrfl == "Gender"), "Female")
     divPrfl <- replace(divPrfl, (divPrfl == "NESB_Sum"), "NESB")
     divPrfl <- replace(divPrfl, (divPrfl == "Disability_HC"), "Disability")
     divPrfl <- replace(divPrfl, (divPrfl == "Indigenous_HC"), "Indigenous")
     
-    # Below 2 replace functions replace NAs in table for Female and NESB metrics with "0% (0)"
-    
+    # Replace NAs in table for Female and NESB metrics with "0% (0)"
     divPrfl <- replace(divPrfl, is.na(divPrfl) & divPrfl$Indicator == "Female", "0% (0)")
     divPrfl <- replace(divPrfl, is.na(divPrfl) & divPrfl$Indicator == "NESB", "0% (0)")
     
-    # Below if statement replaces NAs in table for Disability 
-    # and Indigenous metrics with "0% (0)" and "*" accordingly.
-    
+    # Replace NAs in table for Disability and Indigenous metrics with "0% (0)" and "*" accordingly.
     if  (grepl('100', divPrfl[1,3]) || 
          grepl('100', divPrfl[1,2]) || 
          grepl('100', divPrfl[3,3]) || 
@@ -246,11 +224,6 @@ shinyServer(function(input, output, session) {
       divPrfl <- replace(divPrfl, is.na(divPrfl) & divPrfl$Indicator == "Disability", "*")
       divPrfl <- replace(divPrfl, is.na(divPrfl) & divPrfl$Indicator == "Indigenous", "*")
       
-    } else
-    {
-      
-      divPrfl
-      
     }
 
   })
@@ -258,16 +231,12 @@ shinyServer(function(input, output, session) {
   # MDP plot data
   mdpPrfl <- reactive({
     
-    dataset2() %>% 
-      select(MDP_Status) %>% 
-      group_by(MDP_Status) %>% 
-      summarise(n = n()) %>% 
-      mutate(perc = paste0(round(n / sum(n) * 100, 2), "%")
-             , completion.numbers = paste(n, paste0("(", perc, ")"))) %>% 
+    scaleHC(dataset2(), "MDP_Status") %>% 
+      mutate(completion.numbers = paste(HC, paste0("(", Percent, "%)"))) %>% 
       select(MDP_Status, completion.numbers) %>% 
       rename('MDP Status' = MDP_Status
              , 'Completion Numbers' = completion.numbers) ->
-    mdpPrfl
+      mdpPrfl
 
   })
   
@@ -282,7 +251,7 @@ shinyServer(function(input, output, session) {
                 , F2F = round(sum(F2F_Count)/HC, 2)
                 , eLEARN = round(sum(eLRN_Count)/HC, 2)
                 , EXTERNAL = round(sum(External_Count)/HC, 2)) %>% 
-      gather() %>% 
+      gather() %>% # convert to long format
       slice(2:4) %>% 
       rename('Indicator' = key
              , 'Events per HC' = value) ->
@@ -340,7 +309,6 @@ shinyServer(function(input, output, session) {
   
   # Plots ------------------------------------------------------------------------------------------
   
-  # TODO - make y in plot_ly dynamic rather thannnnnnn have an if/else for each plot
   # Age plot 5yr
   output$agePlot <- renderPlotly({
     
@@ -353,36 +321,46 @@ shinyServer(function(input, output, session) {
       x <- list(title = "")
       y <- list(title = input$selView)
       m <- list(t = 10, r = 30, b = 50)
+
+      p <- plot_ly(data = agePrfl()
+                   , x = Age_Range_5yr
+                   , y = Measure
+                   , type = "bar") %>%
+        layout(xaxis = x
+               , yaxis = y
+               , margin = m) 
+        
+        # print plotly build
+        p
       
-      if (input$selView == "Headcount"){
+    })
+    
+  })
+  
+  # ATO Tenure profile plot
+  output$atoPlot <- renderPlotly({
+    
+    # Take a dependency on action button
+    input$buildDashboard
+    
+    isolate({
+      
+      # plot variables
+      x <- list(title = "")
+      y <- list(title = input$selView)
+      m <- list(t = 10, r = 30, b = 50)
+      
+      # plotly layout
+      p <- plot_ly(data = tnrPrfl()
+                   , x = ATO_Tenure_Range
+                   , y = Measure
+                   , type = "bar") %>%
+        layout(xaxis = x
+               , yaxis = y
+               , margin = m) 
         
-        # plotly build
-        p <- plot_ly(data = agePrfl()
-                     , x = Age_Range_5yr
-                     , y = HC
-                     , type = "bar") %>% 
-          layout(xaxis = x
-                 , yaxis = y
-                 , margin = m) 
-        
-        # print plotly build
-        p
-        
-      } else if (input$selView == "Percentage"){
-        
-        # plotly layout
-        p <- plot_ly(data = agePrfl()
-                     , x = Age_Range_5yr
-                     , y = Percent
-                     , type = "bar") %>% 
-          layout(xaxis = x
-                 , yaxis = y
-                 , margin = m)
-        
-        # print plotly build
-        p
-        
-      }
+      # print plotly build
+      p
       
     })
     
@@ -403,41 +381,20 @@ shinyServer(function(input, output, session) {
       y <- list(title = input$selView)
       m <- list(t = 10, r = 30, b = 50)
       
-      if (input$selView == "Headcount"){
+      # plotly layout
+      p <- plot_ly(data = ageTnrPrfl()
+                   , x = Age_Range_5yr
+                   , y = Measure
+                   , group = ATO_Tenure_Range
+                   , type = "bar") %>% 
+      layout(barmode = "stack"
+             , xaxis = x
+             , yaxis = y
+             , margin = m
+             , showlegend = F) 
         
-        # plotly layout
-        p <- plot_ly(data = ageTnrPrfl()
-                     , x = Age_Range_5yr
-                     , y = HC
-                     , group = ATO_Tenure_Range
-                     , type = "bar") %>% 
-          layout(barmode = "stack"
-                 , xaxis = x
-                 , yaxis = y
-                 , margin = m
-                 , showlegend = F) 
-        
-        # print plotly build
-        p
-        
-      } else if (input$selView == "Percentage"){
-        
-        # plotly layout
-        p <- plot_ly(data = ageTnrPrfl()
-                     , x = Age_Range_5yr
-                     , y = Percent
-                     , group = ATO_Tenure_Range
-                     , type = "bar") %>% 
-          layout(barmode = "stack"
-                 , xaxis = x
-                 , yaxis = y
-                 , margin = m
-                 , showlegend = F) 
-        
-        # print plotly build
-        p
-        
-      }
+      # print plotly build
+      p
       
     })
     
@@ -455,93 +412,24 @@ shinyServer(function(input, output, session) {
       x <- list(title = "")
       y <- list(title = input$selView)
       m <- list(t = 10, r = 30)
+        
+      # plotly layout
+      p <- plot_ly(data = clssnPrfl()
+                   , x = Actual_Classification
+                   , y = Measure
+                   , type = "bar") %>%
+        layout(xaxis = x
+               , yaxis = y
+               , margin = m)
       
-      if (input$selView == "Headcount"){
-        
-        # plotly layout
-        p <- plot_ly(data = clssnPrfl()
-                     , x = Actual_Classification
-                     , y = HC
-                     , type = "bar") %>% 
-          layout(xaxis = x
-                 , yaxis = y
-                 , margin = m) 
-        
-        # print plotly build
-        p
-        
-      } else if (input$selView == "Percentage"){
-        
-        # plotly layout
-        p <- plot_ly(data = clssnPrfl()
-                     , x = Actual_Classification
-                     , y = Percent
-                     , type = "bar") %>% 
-          layout(xaxis = x
-                 , yaxis = y
-                 , margin = m)
-        
-        # print plotly build
-        p
-        
-      }
+      # print plotly build
+      p
       
     })
     
   })
   
-  #__________________________________________________________________________________________________#
-  
-  # ATO Tenure profile plot ####
-  output$atoPlot <- renderPlotly({
-    
-    # Take a dependency on action button
-    input$buildDashboard
-    
-    isolate({
- 
-      # plot variables
-      x <- list(title = "")
-      y <- list(title = input$selView)
-      m <- list(t = 10, r = 30, b = 50)
-      
-      if (input$selView == "Headcount"){
-        
-        # plotly layout
-        p <- plot_ly(data = tnrPrfl()
-                     , x = ATO_Tenure_Range
-                     , y = HC
-                     , type = "bar") %>% 
-          layout(xaxis = x
-                 , yaxis = y
-                 , margin = m) 
-        
-        # print plotly build
-        p
-        
-      } else if (input$selView == "Percentage"){
-        
-        # plotly layout
-        p <- plot_ly(data = tnrPrfl()
-                     , x = ATO_Tenure_Range
-                     , y = Percent
-                     , type = "bar") %>% 
-          layout(xaxis = x
-                 , yaxis = y
-                 , margin = m)
-        
-        # print plotly build
-        p
-        
-      }
-      
-    })
-    
-  })
-  
-  #__________________________________________________________________________________________________#
-  
-  # Job Family profile plot ####
+  # Job Family profile plot
   output$jfPlot <- renderPlotly({
     
     # Take a dependency on action button
@@ -553,7 +441,7 @@ shinyServer(function(input, output, session) {
       x <- list(title = "")
       y <- list(title = input$selView)
       
-      if (input$selView == "Headcount" & input$selOrg != "Job Family"){
+      if (input$selOrg != "Job Family"){
         
         # local margin
         m <- list(t = 10, r = 30, b = 80)
@@ -561,7 +449,7 @@ shinyServer(function(input, output, session) {
         # plotly layout
         p <- plot_ly(data = jobPrfl()
                      , x = Job_Family
-                     , y = HC
+                     , y = Measure
                      , type = "bar") %>% 
           layout(xaxis = x
                  , yaxis = y
@@ -570,24 +458,7 @@ shinyServer(function(input, output, session) {
         # print plotly build
         p
         
-      } else if (input$selView == "Percentage" & input$selOrg != "Job Family"){
-        
-        # local margin
-        m <- list(t = 10, r = 30, b = 80)
-        
-        # plotly layout
-        p <- plot_ly(data = jobPrfl()
-                     , x = Job_Family
-                     , y = Percent
-                     , type = "bar") %>% 
-          layout(xaxis = x
-                 , yaxis = y
-                 , margin = m)
-        
-        # print plotly build
-        p
-        
-      } else if (input$selView == "Headcount" & input$selOrg == "Job Family"){
+      } else if (input$selOrg == "Job Family"){
         
         # local margin
         m <- list(t = 10, r = 30)
@@ -595,30 +466,10 @@ shinyServer(function(input, output, session) {
         # plotly layout
         p <- plot_ly(orgPrfl()
                      , x = Subplan
-                     , y = HC
+                     , y = Measure
                      , group = BSL
                      , type = "bar") %>% 
           layout(barmode = "stack"
-                 , xaxis = x
-                 , yaxis = y
-                 , margin = m
-                 , showlegend = F) 
-        
-        # print plotly build
-        p
-        
-      } else if (input$selView == "Percentage" & input$selOrg == "Job Family"){
-        
-        # local margin
-        m <- list(t = 10, r = 30)
-        
-        # plotly layout
-        p <- plot_ly(orgPrfl()
-                     , x = Subplan
-                     , y = Percent
-                     , group = BSL
-                     , type = "bar") %>% 
-          layout(barmode ="stack"
                  , xaxis = x
                  , yaxis = y
                  , margin = m
@@ -632,8 +483,6 @@ shinyServer(function(input, output, session) {
     })
     
   })
-  
-  #__________________________________________________________________________________________________#
   
   # Position Location profile plot
   output$locnPlot <- renderPlotly({
@@ -647,7 +496,7 @@ shinyServer(function(input, output, session) {
       x <- list(title = "")
       y <- list(title = input$selView)
       
-      if (input$selView == "Headcount" & input$selOrg != "Site"){
+      if (input$selOrg != "Site"){
         
         # local margin 
         m <- list(t = 10, r = 30, b = 80)
@@ -655,7 +504,7 @@ shinyServer(function(input, output, session) {
         # plotly layout
         p <- plot_ly(data = locnPrfl()
                      , x = Position_Location
-                     , y = HC
+                     , y = Measure
                      , type = "bar") %>% 
           layout(xaxis = x
                  , yaxis = y
@@ -664,24 +513,7 @@ shinyServer(function(input, output, session) {
         # print plotly build
         p
         
-      } else if (input$selView == "Percentage" & input$selOrg != "Site"){
-        
-        # local margin 
-        m <- list(t = 10, r = 30, b = 80)
-        
-        # plotly layout
-        p <- plot_ly(data = locnPrfl()
-                     , x = Position_Location
-                     , y = Percent
-                     , type = "bar") %>% 
-          layout(xaxis = x
-                 , yaxis = y
-                 , margin = m)
-        
-        # print plotly build
-        p
-        
-      } else if (input$selView == "Headcount" & input$selOrg == "Site"){
+      } else if (input$selOrg == "Site"){
         
         # local margin 
         m <- list(t = 10, b = 30, l = 60, r = 30)
@@ -689,27 +521,7 @@ shinyServer(function(input, output, session) {
         # plotly layout 
         p <- plot_ly(orgPrfl()
                      , x = Subplan
-                     , y = HC
-                     , group = BSL
-                     , type = "bar") %>% 
-          layout(barmode ="stack"
-                 , xaxis = x
-                 , yaxis = y
-                 , margin = m
-                 , showlegend = F) 
-        
-        # print plotly build
-        p
-        
-      } else if (input$selView == "Percentage" & input$selOrg == "Site"){
-        
-        # local margin 
-        m <- list(t = 10, b = 30, l = 60, r = 30)
-        
-        # plotly layout
-        p <- plot_ly(orgPrfl()
-                     , x = Subplan
-                     , y = Percent
+                     , y = Measure
                      , group = BSL
                      , type = "bar") %>% 
           layout(barmode ="stack"
@@ -727,8 +539,8 @@ shinyServer(function(input, output, session) {
     
   })
   
-  #__________________________________________________________________________________________________#
-
+  # Tables -----------------------------------------------------------------------------------------
+  
   # Diversity Table
   output$divTable <- renderTable({
     
@@ -743,9 +555,7 @@ shinyServer(function(input, output, session) {
     
   }, align = 'c')
   
-  #__________________________________________________________________________________________________#
-  
-  # Learning and development tables ####
+  # Learning and development tables
   output$mdpTbl <- renderTable({
     
     # Take a dependency on action button
@@ -786,8 +596,6 @@ shinyServer(function(input, output, session) {
     
   }, align = 'c')
   
-  #__________________________________________________________________________________________________#
-  
   # Mobility Table
   output$mobTable <- renderTable({
     
@@ -802,8 +610,7 @@ shinyServer(function(input, output, session) {
     
   }, align = 'c')
   
-  #________________________________________________________________________________________________#
-  
+  # Return number of rows in dataset - if zero an error message will display from ui.R -------------
   output$mnPnl <- reactive({
     nrow(dataset2())
   })
