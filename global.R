@@ -11,8 +11,6 @@ suppressPackageStartupMessages({
 # Import Workforce Analytics team functions
 source("/proj/workforce/www/scriptsMiscAdhocs/waFunctions/clssnGrpFun.R") # Group classifications
 source("/proj/workforce/www/scriptsMiscAdhocs/waFunctions/scaleHCFun.R") # Sum HC and percentage of groups
-source("/proj/workforce/work/uctii/scriptsMiscAdhocs/waFunctions/scaleHCFun.R") # Sum HC and percentage of groups
-
 
 # Enable Bookmarking
 enableBookmarking(store = "url")
