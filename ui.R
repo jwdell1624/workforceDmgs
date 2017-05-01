@@ -86,7 +86,7 @@ shinyUI(function(request) {
                     , choices   = as.character(sort(unique(df$Actual_Classification))))),
         
         conditionalPanel(condition = "input.selOrg == 'Classification (Grouped)'",
-          selectInput(inputId   =  "selClssnGrp"
+          selectInput(inputId   = "selClssnGrp"
                       , label   = "Choose Classification Group:"
                       , choices = as.character(sort(unique(df$clssnCat))))),
         

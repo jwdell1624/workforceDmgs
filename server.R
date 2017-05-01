@@ -164,7 +164,6 @@ shinyServer(function(input, output, session) {
     
   })
   
-  # TODO - decide where this goes in the order and giving to the ui selection dropdown
   # Grouped Classification data
   clssnGrpPrfl <- reactive({
     
