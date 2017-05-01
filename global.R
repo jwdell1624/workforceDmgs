@@ -13,16 +13,13 @@ suppressPackageStartupMessages({
 source("/proj/workforce/www/scriptsMiscAdhocs/waFunctions/clssnGrpFun.R")
 
 # Sum HC and percentage of groups
-# source("/proj/workforce/www/scriptsMiscAdhocs/waFunctions/scaleHCFun.R")
-source("/proj/workforce/work/uctii/scriptsMiscAdhocs/waFunctions/scaleHCFun.R")
+source("/proj/workforce/www/scriptsMiscAdhocs/waFunctions/scaleHCFun.R")
 
 # Remove N/As and convert binary to yes/no response
-# source("/proj/workforce/www/scriptsMiscAdhocs/waFunctions/naTreatmentFun.R")
-source("/proj/workforce/work/uctii/scriptsMiscAdhocs/waFunctions/naTreatmentFun.R")
+source("/proj/workforce/www/scriptsMiscAdhocs/waFunctions/naTreatmentFun.R")
 
 # Remove N/As and convert binary to yes/no response
-# source("/proj/workforce/www/scriptsMiscAdhocs/waFunctions/colOrderFun.R")
-source("/proj/workforce/work/uctii/scriptsMiscAdhocs/waFunctions/colOrderFun.R")
+source("/proj/workforce/www/scriptsMiscAdhocs/waFunctions/colOrderFun.R")
 
 # Enable Bookmarking -------------------------------------------------------------------------------
 enableBookmarking(store = "url")
