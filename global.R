@@ -49,8 +49,7 @@ df$NESB_Sum <- ifelse(df$NESB1_HC == "Yes", "Yes", ifelse(df$NESB2_HC == "Yes", 
 # Add grouped classification column
 df <- clssnGrpFun(df)
 
-# TODO - create function to handle this as repeated across WA code base
-# re-format as factor #for Tenure, Classification and Age Range plot order
+# Reformat as factor for Tenure, Classification and Age Range plot order
 df$Actual_Classification <- clssnOrder(df)
 df$clssnCat              <- clssnCatOrder(df)
 df$ATO_Tenure_Range      <- tnrRngOrder(df)
