@@ -103,7 +103,7 @@ shinyUI(function(request) {
         conditionalPanel(condition = "input.selOrg == 'Manager'",
           selectInput(inputId   = "selMgr"
                       , label   = "Choose Manager Indicator:"
-                      , choices = sort(unique(df$Manager_Indicator)))),
+                      , choices = c("Yes", "No"))),
         
         conditionalPanel(condition = "input.selOrg == 'Gender'",
           selectInput(inputId   = "selGndr"
@@ -113,17 +113,17 @@ shinyUI(function(request) {
         conditionalPanel(condition = "input.selOrg == 'NESB'",
           selectInput(inputId   = "selNESB"
                       , label   = "Choose NESB Indicator:"
-                      , choices = sort(unique(df$NESB_Sum)))),
+                      , choices = c("Yes", "No"))),
         
         conditionalPanel(condition = "input.selOrg == 'Disability'",
           selectInput(inputId   = "selDsbl"
                       , label   = "Choose Disability Indicator:"
-                      , choices = sort(unique(df$Disability_HC)))),
+                      , choices = c("Yes", "No"))),
         
         conditionalPanel(condition = "input.selOrg == 'Indigenous'",
           selectInput(inputId   = "selIndg"
                       , label   = "Choose Indigenous Indicator:"
-                      , choices = sort(unique(df$Indigenous_HC)))),
+                      , choices = c("Yes", "No"))),
       
         actionButton(inputId = "buildDashboard"
                      , label = "Refresh Dashboard"
