@@ -2,3 +2,4 @@
 *.json
 *.pdf
 *.txt
+packrat/lib*/
