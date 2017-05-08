@@ -1,10 +1,10 @@
 suppressPackageStartupMessages({
-  suppressMessages(library(shiny))        # web framework
-  suppressMessages(library(readr))        # fast I/O
-  suppressMessages(library(plotly))       # interactive ploting
-  suppressMessages(library(ggplot2))      # data visualisation
-  suppressMessages(library(dplyr))        # data wrangling
-  suppressMessages(library(tidyr))        # tidy data
+  library(shiny)        # web framework
+  library(readr)        # fast I/O
+  library(plotly)       # interactive ploting
+  library(ggplot2)      # data visualisation
+  library(dplyr)        # data wrangling
+  library(tidyr)        # tidy data
 })
 
 # Import Workforce Analytics team functions --------------------------------------------------------
