@@ -198,10 +198,10 @@ shinyUI(function(request) {
                                           , tableOutput("mdpTbl"))
                                , tabPanel(title = "Events Rate"
                                           , br()
-                                          , tableOutput("ldTbl"))
+                                          , div(style = "padding-left: 50px", tableOutput("ldTbl")))
                                , tabPanel(title = "External Cost"
                                           , br()
-                                          , tableOutput("costTbl"))
+                                          , div(style = "padding-left: 50px", tableOutput("costTbl")))
                                , selected = "MDP")),
         
           column(width = 6
