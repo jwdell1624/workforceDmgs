@@ -22,6 +22,7 @@ source("/proj/workforce/www/scriptsMiscAdhocs/waFunctions/naTreatmentFun.R")
 source("/proj/workforce/www/scriptsMiscAdhocs/waFunctions/colOrderFun.R")
 
 # Enable Bookmarking -------------------------------------------------------------------------------
+
 enableBookmarking(store = "url")
 
 # Load data ----------------------------------------------------------------------------------------

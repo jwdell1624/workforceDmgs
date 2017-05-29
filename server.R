@@ -77,7 +77,7 @@ shinyServer(function(input, output, session) {
       if (input$selEmpTyp == "All Employment Types"){
         df
       } else {
-        subset(df, df$Perm_Temp == input$selEmpTyp)
+        filter(df, df$Perm_Temp == input$selEmpTyp)
       }
 
     })
@@ -93,22 +93,21 @@ shinyServer(function(input, output, session) {
     isolate({
       switch(input$selOrg
              , "ATO"             = dataset()
-             , "Group"           = subset(dataset(), dataset()$Subplan == input$selGrp)
-             , "BSL"             = subset(dataset(), dataset()$BSL == input$selBSL)
-             , "Branch"          = subset(dataset(), dataset()$Org_Unit_Branch == input$selBranch)
-             , "Team/Org.Unit"   = subset(dataset(), dataset()$Org_Unit_Team == input$selTeam)
-             , "Cost Centre"     = subset(dataset(), dataset()$Cost_Centre_Code == input$selCstCntr)
-             , "Classification"  = subset(dataset()
-                                          , dataset()$Actual_Classification == input$selClssn)
+             , "Group"           = dataset() %>% filter(Subplan == input$selGrp)
+             , "BSL"             = dataset() %>% filter(BSL == input$selBSL)
+             , "Branch"          = dataset() %>% filter(Org_Unit_Branch == input$selBranch)
+             , "Team/Org.Unit"   = dataset() %>% filter(Org_Unit_Team == input$selTeam)
+             , "Cost Centre"     = dataset() %>% filter(Cost_Centre_Code == input$selCstCntr)
+             , "Classification"  = dataset() %>% filter(Actual_Classification == input$selClssn)
              , "Classification (Grouped)"
-                                 = subset(dataset(), dataset()$clssnCat == input$selClssnGrp)
-             , "Job Family"      = subset(dataset(), dataset()$Job_Family == input$selJob)
-             , "Site"            = subset(dataset(), dataset()$Position_Location == input$selSite)
-             , "Manager"         = subset(dataset(), dataset()$Manager_Indicator == input$selMgr)
-             , "Gender"          = subset(dataset(), dataset()$Gender == input$selGndr)
-             , "NESB"            = subset(dataset(), dataset()$NESB_Sum == input$selNESB)
-             , "Disability"      = subset(dataset(), dataset()$Disability_HC == input$selDsbl)
-             , "Indigenous"      = subset(dataset(), dataset()$Indigenous_HC == input$selIndg)
+                                 = dataset() %>% filter(clssnCat == input$selClssnGrp)
+             , "Job Family"      = dataset() %>% filter(Job_Family == input$selJob)
+             , "Site"            = dataset() %>% filter(Position_Location == input$selSite)
+             , "Manager"         = dataset() %>% filter(Manager_Indicator == input$selMgr)
+             , "Gender"          = dataset() %>% filter(Gender == input$selGndr)
+             , "NESB"            = dataset() %>% filter(NESB_Sum == input$selNESB)
+             , "Disability"      = dataset() %>% filter(Disability_HC == input$selDsbl)
+             , "Indigenous"      = dataset() %>% filter(Indigenous_HC == input$selIndg)
       )
     })
   })
