@@ -52,7 +52,8 @@ shinyUI(function(request) {
                                    , "Gender"
                                    , "NESB"
                                    , "Disability"
-                                   , "Indigenous") # explicitly ordered
+                                   , "Indigenous"
+                                   , "Graduate") # explicitly ordered
                      , selected = "ATO"),
       
         conditionalPanel(condition = "input.selOrg == 'Group'", 
@@ -123,6 +124,11 @@ shinyUI(function(request) {
         conditionalPanel(condition = "input.selOrg == 'Indigenous'",
           selectInput(inputId   = "selIndg"
                       , label   = "Choose Indigenous Indicator:"
+                      , choices = c("Yes", "No"))),
+        
+        conditionalPanel(condition = "input.selOrg == 'Graduate'",
+          selectInput(inputId   = "selGrad"
+                      , label   = "Choose Current/Previous Graduate Indicator:"
                       , choices = c("Yes", "No"))),
       
         actionButton(inputId = "buildDashboard"
