@@ -12,7 +12,7 @@ shinyUI(function(request) {
                ".shiny-output-error:before { visibility: hidden; }"),
     
     # Navbar HTML
-    includeHTML("www/navbar.html"),
+    includeHTML("/proj/workforce/www/apache/apps/navbar.html"),
   
     # Navbar padding
     div(style = "padding-top: 50px", titlePanel("Workforce Demographics")),
