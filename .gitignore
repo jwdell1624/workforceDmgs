@@ -1,5 +1,22 @@
+# Data
 *.csv
+*.html
 *.json
-*.pdf
 *.txt
+*.xml
+*.RData
+
+# R session dotfiles
+*.Rhistory
+.Rproj.user
+
+# knitr and R markdown default cache directories
+/*_cache/
+/cache/
+
+# packrat related
 packrat/lib*/
+packrat/src/
+
+# leftovers
+*~
