@@ -16,6 +16,9 @@ shinyUI(function(request) {
   
     # Navbar padding
     div(style = "padding-top: 50px", titlePanel("Workforce Demographics")),
+    
+    # Piwik web analytics
+    tags$head(includeScript("www/piwik.js")),
   
     sidebarLayout(
       

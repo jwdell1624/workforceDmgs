@@ -108,7 +108,6 @@ shinyServer(function(input, output, session) {
              , "NESB"            = dataset() %>% filter(NESB_Sum == input$selNESB)
              , "Disability"      = dataset() %>% filter(Disability_HC == input$selDsbl)
              , "Indigenous"      = dataset() %>% filter(Indigenous_HC == input$selIndg)
-             , "Graduate"        = dataset() %>% filter(Grad_Indicator == input$selGrad)
       )
     })
   })
