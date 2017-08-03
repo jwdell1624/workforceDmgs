@@ -3,7 +3,7 @@ var _paq = _paq || [];
   _paq.push(['trackPageView']);
 _paq.push(['enableLinkTracking']);
 (function() {
-  var u="//10.10.134.226/piwik/";
+  var u="//piwik.radlab.local/";
   _paq.push(['setTrackerUrl', u+'piwik.php']);
   _paq.push(['setSiteId', '3']);
   var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
