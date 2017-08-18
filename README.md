@@ -31,7 +31,7 @@ Below is a `dplyr::glimpse()` of the data used in the application and classes of
 A full list of packages used for this application can be found in the [packrat.lock](./packrat/packrat.lock) file.
 
 ## Authors
-[List of contributors](http://gitlab.radlab.local/workforce/bivariateDmgs/graphs/master)
+[List of contributors](http://gitlab.radlab.local/workforce/shinyApps/bivariateDmgs/graphs/master)
 
 ## License
 
