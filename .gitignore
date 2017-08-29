@@ -16,7 +16,7 @@
 
 # packrat related
 packrat/lib*/
-packrat/src/
+packrat/src*/
 
 # leftovers
 *~
