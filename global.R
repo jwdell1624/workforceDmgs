@@ -27,11 +27,8 @@ enableBookmarking(store = "url")
 
 # Load data ----------------------------------------------------------------------------------------
 
-# Set path for data files
-dataPath <- "/proj/workforce/data/shinyApps/"
-
 # Read snapshot data
-df <- read_csv(paste0(dataPath, "workforceDmgs/wddDmgs.csv"))
+df <- read_csv("data/random_df.csv")
 
 # DATA CLEANSE -------------------------------------------------------------------------------------
 
