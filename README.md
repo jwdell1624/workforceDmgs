@@ -71,7 +71,9 @@ $ Grad_Indicator         (chr) "No", "No", "No", "No", "No", "No", "Yes", "No", 
 * [tidyr](http://tidyr.tidyverse.org/) - data wrangling
 
 ### Package Versions Used
-A full list of packages used for this application can be found in the [packrat.lock](./packrat/packrat.lock) file.
+Package dependencies are managed with [Packrat](https://rstudio.github.io/packrat/). A full list of packages used for this application can be found in the [packrat.lock](./packrat/packrat.lock) file. 
+
+Note: the packrat.lock file points to [Rstudio's CRAN mirror](http://cran.rstudio.com) by default.
 
 ## Authors
 [List of contributors](http://gitlab.radlab.local/workforce/shinyApps/workforceDmgs/graphs/master)
