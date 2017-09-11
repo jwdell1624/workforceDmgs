@@ -77,7 +77,7 @@ Note: the packrat.lock file points to [Rstudio's CRAN mirror](http://cran.rstudi
 
 ## How to Get Started
 * Clone our GitHub repo with `git clone https://github.com/atogov/workforceDmgs.git`
-* Where necessary, change the default CRAN repo in packrat.lock to your preferred option. [Here's the official list of CRAN mirrors.](https://cran.r-project.org/mirrors.html)
+* Where necessary, change the default CRAN repo in [packrat.lock](./packrat/packrat.lock) to your preferred option. [Here's the official list of CRAN mirrors.](https://cran.r-project.org/mirrors.html)
 * From RStudio open the project `workforceDmgs.Rproj`, or alternatively run `packrat::init()` in the R console
 * Test the application works from the R console with `shiny::runApp()`
 
