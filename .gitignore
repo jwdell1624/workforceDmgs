@@ -1,5 +1,6 @@
 # Data
 *.csv
+!random_df.csv
 *.html
 *.json
 *.txt
