@@ -76,7 +76,7 @@ Package dependencies are managed with [Packrat](https://rstudio.github.io/packra
 Note: the packrat.lock file points to [Rstudio's CRAN mirror](http://cran.rstudio.com) by default.
 
 ## Authors
-[List of contributors](http://gitlab.radlab.local/workforce/shinyApps/workforceDmgs/graphs/master)
+[List of contributors](https://github.com/atogov/workforceDmgs/graphs/contributors)
 
 ## License
 
