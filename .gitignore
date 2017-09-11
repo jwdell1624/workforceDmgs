@@ -2,6 +2,7 @@
 *.csv
 !random_df.csv
 *.html
+!navbar.html
 *.json
 *.txt
 *.xml
