@@ -10,16 +10,16 @@ suppressPackageStartupMessages({
 # Import Workforce Analytics team functions --------------------------------------------------------
 
 # Group classifications
-source("clssnGrpFun.R")
+source("functions/clssnGrpFun.R")
 
 # Sum HC and percentage of groups
-source("scaleHCFun.R")
+source("functions/scaleHCFun.R")
 
 # Remove N/As and convert binary to yes/no response
-source("naTreatmentFun.R")
+source("functions/naTreatmentFun.R")
 
 # Remove N/As and convert binary to yes/no response
-source("colOrderFun.R")
+source("functions/colOrderFun.R")
 
 # Enable Bookmarking -------------------------------------------------------------------------------
 
