@@ -1,6 +1,6 @@
 # Workforce Demographics
 
-View a range of workforce related demographics information across the organisation.
+View a range of workforce related demographics information across the organisation. You can find a deployed version of this application [here](https://atogov.shinyapps.io/workforcedmgs/).
 
 ![Application Screenshot](./AppScreenshot.PNG)
 
@@ -65,10 +65,9 @@ $ Grad_Indicator         (chr) "No", "No", "No", "No", "No", "No", "Yes", "No", 
 ## Built With
 * [Shiny](https://shiny.rstudio.com/) - Web Framework for R
 * [readr](https://cran.r-project.org/web/packages/readr/README.html) - Fast I/O of tabular data
-* [Plotly](https://plot.ly/r/) - Interactive Plots
-* [ggplot2](http://ggplot2.org/) - data visualisation
+* [Plotly](https://plot.ly/r/) - Plotly.js for R
 * [dplyr](http://dplyr.tidyverse.org/) - data wrangling
-* [tidyr](http://tidyr.tidyverse.org/) - data wrangling
+* [tidyr](http://tidyr.tidyverse.org/) - tidy data
 
 ### Package Versions Used
 Package dependencies are managed with [Packrat](https://rstudio.github.io/packrat/). A full list of packages used for this application can be found in the [packrat.lock](./packrat/packrat.lock) file. 
