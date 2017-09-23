@@ -1,5 +1,18 @@
 shinyServer(function(input, output, session) {
   
+  # USER MESSAGE -----------------------------------------------------------------------------------
+  
+  # Provide message to user if no data is in selection
+  output$mnPnl <- reactive({
+    nrow(dataset2())
+  })
+  outputOptions(output, 'mnPnl', suspendWhenHidden = FALSE)
+  
+  # SOURCE FUNCTIONS -------------------------------------------------------------------------------
+  
+  # Sum HC and percentages - must be defined in server.R to access Shiny inputs
+  source("functions/scaleHCFun.R")
+  
   # DYNAMIC UI -------------------------------------------------------------------------------------
   
   # Dynamic UI for Location/Group plot
@@ -112,7 +125,7 @@ shinyServer(function(input, output, session) {
     })
   })
   
-  # DATA WRANGLING LOGIC ---------------------------------------------------------------------------
+  # DATA OUTPUTS -----------------------------------------------------------------------------------
   
   # Age data - 5yrs
   agePrfl <- reactive({
@@ -311,11 +324,9 @@ shinyServer(function(input, output, session) {
       replace(is.na(.), "0% (0)") ->
     mobPrfl
     
-    # replace(mobPrfl, is.na(mobPrfl), "0% (0)")
-    
   })
   
-  # Plots ------------------------------------------------------------------------------------------
+  # PLOTS ------------------------------------------------------------------------------------------
   
   # Age plot 5yr
   output$agePlot <- renderPlotly({
@@ -617,11 +628,5 @@ shinyServer(function(input, output, session) {
     })
     
   }, align = 'c')
-  
-  # Return number of rows in dataset - if zero an error message will display from ui.R -------------
-  output$mnPnl <- reactive({
-    nrow(dataset2())
-  })
-  outputOptions(output, 'mnPnl', suspendWhenHidden = FALSE)
   
 })

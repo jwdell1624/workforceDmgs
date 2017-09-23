@@ -1,38 +1,34 @@
 suppressPackageStartupMessages({
-  library(shiny)        # web framework
+  library(shiny)        # R web framework
   library(readr)        # fast I/O
-  library(plotly)       # interactive ploting
-  library(ggplot2)      # data visualisation
+  library(plotly)       # plotly.js for R
   library(dplyr)        # data wrangling
   library(tidyr)        # tidy data
 })
 
-# Import Workforce Analytics team functions --------------------------------------------------------
+# SOURCE FUNCTIONS ---------------------------------------------------------------------------------
 
 # Group classifications
 source("functions/clssnGrpFun.R")
 
-# Sum HC and percentage of groups
-source("functions/scaleHCFun.R")
-
 # Remove N/As and convert binary to yes/no response
 source("functions/naTreatmentFun.R")
 
-# Remove N/As and convert binary to yes/no response
+# Re-order factors
 source("functions/colOrderFun.R")
 
-# Enable Bookmarking -------------------------------------------------------------------------------
+# BOOKMARKING --------------------------------------------------------------------------------------
 
 enableBookmarking(store = "url")
 
-# Load data ----------------------------------------------------------------------------------------
+# LOAD DATA ----------------------------------------------------------------------------------------
 
 # Read snapshot data
 df <- read_csv("data/random_df.csv")
 
 # DATA CLEANSE -------------------------------------------------------------------------------------
 
-# remove CSA Externals
+# Remove CSA Externals
 df <- subset(df, df$Cost_Centre_Text != "CSA External Staff")
 
 # Remove NAs and reformat binary answers to Yes/No 
@@ -40,11 +36,11 @@ na.cols <- c("NESB1_HC", "NESB2_HC", "Disability_HC", "Indigenous_HC", "MDP_Comp
              , "Mobility_Indicator", "OOM_Indicator", "Manager_Indicator")
 df      <- data.frame(df[, !names(df) %in% na.cols], lapply(df[na.cols], function(x) na.treat(x)))
 
-# Temporary fix for function problem with F2F_Count, eLRN_Count, External_Count and External_Cost
-df$F2F_Count <- ifelse(is.na(df$F2F_Count), 0, df$F2F_Count)
-df$eLRN_Count <- ifelse(is.na(df$eLRN_Count), 0, df$eLRN_Count)
+# Temp. fix for function problem with F2F_Count, eLRN_Count, External_Count and External_Cost
+df$F2F_Count      <- ifelse(is.na(df$F2F_Count), 0, df$F2F_Count)
+df$eLRN_Count     <- ifelse(is.na(df$eLRN_Count), 0, df$eLRN_Count)
 df$External_Count <- ifelse(is.na(df$External_Count), 0, df$External_Count)
-df$External_Cost <- ifelse(is.na(df$External_Cost), 0, df$External_Cost)
+df$External_Cost  <- ifelse(is.na(df$External_Cost), 0, df$External_Cost)
 
 # NESB_Sum equal to "Yes" if NESB1_HC OR NESB2_HC equal "Yes"
 df$NESB_Sum <- ifelse(df$NESB1_HC == "Yes", "Yes", ifelse(df$NESB2_HC == "Yes", "Yes", "No"))
